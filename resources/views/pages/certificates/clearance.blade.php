@@ -102,7 +102,7 @@
     </p>
 
     <p class="indent">
-        Issued this {{ now()->format('jS') }} day of {{ now()->format('F Y') }}
+        Issued this {{ $cert->created_at->format('jS') }} day of {{ $cert->created_at->format('F Y') }}
         at Barangay {{ strtoupper($cert->barangay->name ?? '________') }}.
     </p>
 

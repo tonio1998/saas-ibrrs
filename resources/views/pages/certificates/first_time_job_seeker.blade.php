@@ -96,13 +96,14 @@
     </p>
 
     <p class="indent">
-        This certification is issued upon the request of the above-named person for employment purposes
+        This certification is issued upon the request of the above-named person for
+        <span class="bold">{{ strtoupper($cert->purpose) }}</span>.
         and to avail of the privileges granted under the said law, including exemption from payment of
         fees and charges on government-issued documents.
     </p>
 
     <p class="indent">
-        Issued this {{ now()->format('jS') }} day of {{ now()->format('F Y') }}
+        Issued this {{ $cert->created_at->format('jS') }} day of {{ $cert->created_at->format('F Y') }}
         at Barangay {{ strtoupper($cert->barangay->name ?? '________') }}.
     </p>
 
