@@ -259,14 +259,55 @@ class CertificateRequestController extends Controller
             abort(403);
         }
 
-        $pdf = PDF::loadView('pages.certificates.pdf', compact('cert'))
-            ->setPaper('A4')
-            ->setOptions([
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true
-            ]);
+        if($cert->certificateType === null){
+            return response()->view('pages.certificates.error', [
+                'code' => 500,
+                'message' => 'Document type not set',
+                'sub' => 'The PDF could not be generated properly.'
+            ], 500);
+        }
 
-        return $pdf->stream('certificate-'.$cert->ControlNo.'.pdf');
+        if($cert->certificateType->template == 'barangay_clearance_template'){
+            $pdf = PDF::loadView('pages.certificates.clearance', compact('cert'))
+                ->setPaper('A4')
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true
+                ]);
+            return $pdf->stream('certificate-'.$cert->ControlNo.'.pdf');
+        }
+
+        if($cert->certificateType->template == 'certificate_of_residency_template'){
+            $pdf = PDF::loadView('pages.certificates.residency', compact('cert'))
+                ->setPaper('A4')
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true
+                ]);
+            return $pdf->stream('certificate-'.$cert->ControlNo.'.pdf');
+        }
+
+        if($cert->certificateType->template == 'certificate_of_indigency_template'){
+            $pdf = PDF::loadView('pages.certificates.indigency', compact('cert'))
+                ->setPaper('A4')
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true
+                ]);
+            return $pdf->stream('certificate-'.$cert->ControlNo.'.pdf');
+        }
+
+        if($cert->certificateType->template == 'first_time_job_seeker'){
+            $pdf = PDF::loadView('pages.certificates.first_time_job_seeker', compact('cert'))
+                ->setPaper('A4')
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => true
+                ]);
+            return $pdf->stream('certificate-'.$cert->ControlNo.'.pdf');
+        }
+
+        return view('pages.certificates.print', compact('cert'));
     }
 
     public function update(Request $request, $id)
@@ -319,7 +360,7 @@ class CertificateRequestController extends Controller
 
                 return '
             <div class="dropdown">
-                <button class="btn btn-soft-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                <button class="btn btn-soft-primary dropdown-toggle" data-bs-toggle="dropdown">
                     Actions
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
