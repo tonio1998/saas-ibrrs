@@ -1,0 +1,146 @@
+.select2-container{
+    width:100%!important;
+    font-size:14px;
+}
+
+/* SINGLE SELECT */
+
+.select2-container--bootstrap-5 .select2-selection--single{
+    height:40px;
+    border:1px solid var(--color-border);
+    border-radius:10px;
+    padding:0 14px;
+    display:flex;
+    align-items:center;
+    background:#fff;
+    transition:var(--transition);
+}
+
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered{
+    padding:0;
+    margin:0;
+    line-height:40px;
+    color:var(--color-text);
+}
+
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow{
+    height:40px;
+    right:10px;
+}
+
+/* MULTIPLE SELECT */
+
+.select2-container--bootstrap-5 .select2-selection--multiple{
+    min-height:40px;
+    border:1px solid var(--color-border);
+    border-radius:10px;
+    padding:6px 8px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    background:#fff;
+}
+
+.select2-container--bootstrap-5 .select2-selection__choice{
+    margin:0;
+    padding:3px 8px;
+    background:#eef2f3;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:13px;
+}
+
+.select2-container--bootstrap-5 .select2-selection__choice__remove{
+    margin-right:4px;
+}
+
+/* SEARCH INPUT */
+
+.select2-container--bootstrap-5 .select2-search--inline .select2-search__field{
+    margin:0;
+    padding:2px;
+    height:26px;
+}
+
+/* FOCUS */
+
+.select2-container--bootstrap-5.select2-container--focus .select2-selection{
+    border-color:var(--color-primary);
+    box-shadow:0 0 0 .15rem rgba(0,77,26,.15);
+}
+.select2-container{
+    width:100%!important;
+    font-size:14px;
+}
+
+/* MULTIPLE SELECT BASE */
+
+.select2-container--bootstrap-5 .select2-selection--multiple{
+    min-height:40px;
+    border:1px solid var(--color-border);
+    border-radius:10px;
+    padding:4px 10px;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:6px;
+}
+
+/* RESET INTERNAL LIST */
+
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    padding:0;
+    margin:0;
+}
+
+/* TAG STYLE */
+
+.select2-container--bootstrap-5 .select2-selection__choice{
+    margin:0;
+    padding:3px 8px;
+    background: var(--color-primary-soft);
+    border:1px solid #d1d5db;
+    border-radius:8px !important;
+    font-size:13px !important;
+    display:flex;
+    align-items:center;
+}
+.select2-selection__choice__display{
+    font-size:14px;
+}
+
+.select2-search__field{
+    transform: translateY(-3px) !important;
+    font-size:15px !important;
+}
+
+/* REMOVE BUTTON */
+
+.select2-container--bootstrap-5 .select2-selection__choice__remove{
+    margin-right:4px;
+}
+
+/* SEARCH FIELD */
+
+.select2-container--bootstrap-5 .select2-search--inline{
+    margin:0;
+}
+
+.select2-container--bootstrap-5 .select2-search__field{
+    margin:0;
+    padding:2px;
+    height:26px;
+}
+
+/* FOCUS */
+
+.select2-container--bootstrap-5.select2-container--focus .select2-selection{
+    border-color:var(--color-primary);
+    box-shadow:0 0 0 .15rem rgba(0,77,26,.15);
+}
