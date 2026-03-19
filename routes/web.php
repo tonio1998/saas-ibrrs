@@ -19,6 +19,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->intended('/dashboard');
+    }
+
     return view('auth.login');
 });
 
@@ -113,6 +117,17 @@ Route::middleware('auth')->group(function(){
         Route::post('/issue', [CertificateRequestController::class, 'issue'])->name('issue');
     });
 
+    Route::prefix('certificate-types')->name('certificate-types.')->group(function(){
+        Route::get('/index', [CertificateTypesController::class, 'index'])->name('index');
+        Route::get('/create', [CertificateTypesController::class, 'create'])->name('create');
+        Route::post('/create', [CertificateTypesController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [CertificateTypesController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [CertificateTypesController::class, 'update'])->name('update');
+        Route::get('/data', [CertificateTypesController::class, 'ajaxData'])->name('data');
+        Route::delete('/destroy/{id}', [CertificateTypesController::class, 'destroy'])->name('destroy');
+        Route::get('/print/{control_no}', [CertificateRequestController::class,'print'])->name('print');
+    });
+
     Route::get('/reports', fn() => view('pages.reports.index'));
     Route::get('/settings', fn() => view('pages.settings.index'));
 
@@ -129,4 +144,3 @@ Route::middleware('auth')->group(function(){
 });
 
 Route::get('/verify/{control_no}', [CertificateRequestController::class,'verify'])->name('cert.verify');
-Route::get('/print/{control_no}', [CertificateRequestController::class,'print'])->name('cert.print');

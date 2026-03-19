@@ -11,7 +11,6 @@ import 'datatables.net-bs5'
 import 'datatables.net-buttons-bs5'
 import 'datatables.net-buttons/js/buttons.html5'
 import 'datatables.net-buttons/js/buttons.print'
-import './dashboard'
 import JSZip from 'jszip'
 window.JSZip = JSZip
 
@@ -22,6 +21,7 @@ import Swal from 'sweetalert2'
 window.Swal = Swal
 import './roles-drag.js'
 import './permissions-drag.js'
+import './dashboard.js'
 document.addEventListener("DOMContentLoaded",function(){
     document.querySelectorAll(".password-toggle").forEach(toggle=>{
         toggle.addEventListener("click",function(){
@@ -35,7 +35,11 @@ document.addEventListener("DOMContentLoaded",function(){
 })
 
 $(function () {
-
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
     $('.select2').each(function () {
 
         const el = $(this)
@@ -89,6 +93,41 @@ $(function () {
         }
 
     })
+
+    $(document).on('click', '.deleteType', function(e){
+        e.preventDefault();
+
+        const btn = $(this);
+        const id = btn.data('id');
+
+        if(!confirm('Delete this certificate type?')) return;
+
+        btn.addClass('disabled');
+
+        let url = "/certificate-types/destroy/:id";
+        url = url.replace(':id', id);
+
+        $.ajax({
+            url: url,
+            type: 'DELETE',
+            success: function(res){
+                location.reload();
+            },
+            error: function(xhr){
+                let msg = 'Delete failed';
+
+                if(xhr.responseJSON && xhr.responseJSON.message){
+                    msg = xhr.responseJSON.message;
+                }
+
+                alert(msg);
+            },
+            complete: function(){
+                btn.removeClass('disabled');
+            }
+        });
+
+    });
 
 })
 document.addEventListener('DOMContentLoaded', function(){
