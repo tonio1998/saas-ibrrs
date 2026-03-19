@@ -51,6 +51,28 @@ class Residents extends Model implements AuditableContract
         'deleted_at',
     ];
 
+    public function info()
+    {
+        return $this->hasOne(ResidentInfo::class, 'resident_id')
+            ->where('archived', 0)
+            ->whereNull('deleted_at');
+    }
+
+    public function businesses()
+    {
+        return $this->hasMany(BusinessInformation::class, 'resident_id')
+            ->where('archived', 0)
+            ->whereNull('deleted_at');
+    }
+
+    public function activeBusinesses()
+    {
+        return $this->hasMany(BusinessInformation::class, 'resident_id')
+            ->where('status', 'active')
+            ->where('archived', 0)
+            ->whereNull('deleted_at');
+    }
+
     public function household()
     {
         return $this->belongsTo(Households::class, 'household_id');

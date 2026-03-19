@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AddressController;
+use App\Http\Controllers\BusinessInfoController;
 use App\Http\Controllers\CertificateRequestController;
 use App\Http\Controllers\CertificateRequestsController;
 use App\Http\Controllers\CertificatesController;
@@ -10,6 +12,7 @@ use App\Http\Controllers\LogsController;
 use App\Http\Controllers\ParentsController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PuroksController;
+use App\Http\Controllers\ResidentInfoController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScannerController;
 use App\Http\Controllers\ResidentsController;
@@ -84,6 +87,19 @@ Route::middleware('auth')->group(function(){
         Route::get('/create', [ResidentsController::class, 'create'])->name('create');
         Route::post('/create', [ResidentsController::class, 'store'])->name('store');
         Route::get('/data', [ResidentsController::class, 'ajaxData'])->name('data');
+        Route::get('show/{id}', [ResidentsController::class, 'show'])->name('show');
+    });
+
+    Route::prefix('resident-info')->name('resident-info.')->group(function () {
+        Route::post('/store', [ResidentInfoController::class, 'store'])->name('store');
+        Route::put('/update/{id}', [ResidentInfoController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [ResidentInfoController::class, 'destroy'])->name('delete');
+    });
+
+    Route::prefix('business')->group(function () {
+        Route::post('/store', [BusinessInfoController::class, 'store'])->name('business.store');
+        Route::put('/update/{id}', [BusinessInfoController::class, 'update'])->name('business.update');
+        Route::delete('/delete/{id}', [BusinessInfoController::class, 'destroy'])->name('business.delete');
     });
 
     Route::prefix('permissions')->name('permissions.')->group(function(){
@@ -139,7 +155,16 @@ Route::middleware('auth')->group(function(){
         Route::get('residents/search',[ResidentsController::class,'residents_search'])->name('residents');
         Route::get('certificate-requests/search',[CertificateRequestController::class,'certificate_requests_search'])->name('certificate-requests');
         Route::get('certificate-types/search',[CertificateTypesController::class,'certificate_types_search'])->name('certificate-types');
+
+        Route::prefix('address')->group(function () {
+            Route::get('/full', [AddressController::class, 'full'])->name('full');
+            Route::get('/regions', [AddressController::class, 'regions'])->name('x_selectRegions');
+            Route::get('/provinces', [AddressController::class, 'provinces'])->name('x_selectRegionProvinces');
+            Route::get('/cities', [AddressController::class, 'cities'])->name('x_selectProvinceCityMuns');
+            Route::get('/barangays', [AddressController::class, 'barangays'])->name('x_selectCityMunBarangays');
+        });
     });
+
 
 });
 

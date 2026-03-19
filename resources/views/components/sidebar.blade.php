@@ -14,7 +14,7 @@
         <li class="sidebar-item">
             <a class="sidebar-link" data-bs-toggle="collapse" href="#CertificateMenu">
                 <i class="bi bi-person-badge sidebar-icon"></i>
-                <span>Certificate Management</span>
+                <span class="text-truncate">Certificate Management</span>
                 <i class="bi bi-chevron-down dropdown-icon"></i>
             </a>
             <div class="collapse sidebar-dropdown" id="CertificateMenu">
@@ -32,7 +32,7 @@
         <li class="sidebar-item">
             <a class="sidebar-link" data-bs-toggle="collapse" href="#teacherMenu">
                 <i class="bi bi-person-badge sidebar-icon"></i>
-                <span>Resident Management</span>
+                <span class="text-truncate">Resident Management</span>
                 <i class="bi bi-chevron-down dropdown-icon"></i>
             </a>
             <div class="collapse sidebar-dropdown" id="teacherMenu">
@@ -50,7 +50,7 @@
         <li class="sidebar-item">
             <a class="sidebar-link" data-bs-toggle="collapse" href="#HouseholdMenu">
                 <i class="bi bi-person-badge sidebar-icon"></i>
-                <span>Household Management</span>
+                <span class="text-truncate">Household Management</span>
                 <i class="bi bi-chevron-down dropdown-icon"></i>
             </a>
             <div class="collapse sidebar-dropdown" id="HouseholdMenu">
@@ -68,7 +68,7 @@
         <li class="sidebar-item">
             <a class="sidebar-link" data-bs-toggle="collapse" href="#PurokMenu">
                 <i class="bi bi-person-badge sidebar-icon"></i>
-                <span>Purok Management</span>
+                <span class="text-truncate">Purok Management</span>
                 <i class="bi bi-chevron-down dropdown-icon"></i>
             </a>
             <div class="collapse sidebar-dropdown" id="PurokMenu">
@@ -105,7 +105,7 @@
         <li class="sidebar-item">
             <a class="sidebar-link" data-bs-toggle="collapse" href="#certificatetypesMenu">
                 <i class="bi bi-shield-lock sidebar-icon"></i>
-                <span>Certificate Types</span>
+                <span class="text-truncate">Certificate Types</span>
                 <i class="bi bi-chevron-down dropdown-icon"></i>
             </a>
             <div class="collapse sidebar-dropdown" id="certificatetypesMenu">
@@ -122,7 +122,7 @@
         <li class="sidebar-item">
             <a class="sidebar-link" data-bs-toggle="collapse" href="#usersMenu">
                 <i class="bi bi-shield-lock sidebar-icon"></i>
-                <span>User Management</span>
+                <span class="text-truncate">User Management</span>
                 <i class="bi bi-chevron-down dropdown-icon"></i>
             </a>
             <div class="collapse sidebar-dropdown" id="usersMenu">
