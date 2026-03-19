@@ -1,0 +1,184 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+@import "select2/dist/css/select2.min.css";
+@import "select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css";
+@import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
+@import "datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css";
+
+@import "./base.css";
+@import "./layout.css";
+@import "./components.css";
+@import "./auth.css";
+@import "./utilities.css";
+@import "./datatables.css";
+@import "./select2.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+
+
+:root{
+
+    --font-sans:'Inter',system-ui,-apple-system,sans-serif;
+
+    /* BRAND */
+    --color-primary:#008000;
+    --color-primary-600:#74BC44;
+    --color-primary-700:#003D14;
+    --color-primary-soft:#E8F3EC;
+
+    --color-brand:#74BC44;
+
+    --color-accent:#008000;
+    --color-accent-600:#F4B400;
+    --color-accent-soft:#FFF7D1;
+
+    /* BACKGROUNDS */
+    --color-bg:#F8FAF9;
+    --color-surface:#FFFFFF;
+    --color-surface-muted:#F3F4F6;
+    --color-sidebar:#FFFFFF;
+    --color-sidebar-active:#FFF3DA;
+
+    /* BORDERS */
+    --color-border:#E5E7EB;
+    --color-divider:#F1F5F9;
+
+    /* TEXT */
+    --color-text:#111827;
+    --color-text-soft:#6B7280;
+    --color-text-muted:#9CA3AF;
+    --color-text-inverse:#FFFFFF;
+
+    /* STATUS */
+    --color-success:#16A34A;
+    --color-warning:#F59E0B;
+    --color-danger:#DC2626;
+    --color-info:#2563EB;
+
+    /* TABLE */
+    --table-header:#F9FAFB;
+    --table-hover:#F3F4F6;
+
+    /* BUTTONS */
+    --btn-primary-bg:var(--color-primary);
+    --btn-primary-text:#fff;
+
+    --btn-accent-bg:var(--color-accent);
+    --btn-accent-text:#111;
+
+    --btn-danger-bg:#DC2626;
+    --btn-danger-text:#fff;
+
+    /* SIDEBAR */
+    --sidebar-width:240px;
+
+    /* RADIUS */
+    --radius-xs:6px;
+    --radius-sm:8px;
+    --radius:12px;
+    --radius-lg:16px;
+    --radius-xl:20px;
+    --radius-pill:999px;
+
+    /* SHADOWS */
+    --shadow-xs:0 1px 3px rgba(0,0,0,.05);
+    --shadow-sm:0 2px 6px rgba(0,0,0,.05);
+    --shadow:0 6px 20px rgba(0,0,0,.06);
+    --shadow-lg:0 12px 30px rgba(0,0,0,.08);
+
+    /* TRANSITIONS */
+    --transition-fast:150ms ease;
+    --transition:200ms ease;
+    --transition-slow:300ms ease;
+
+    /* LAYOUT */
+    --nav-height:64px;
+    --container-width:1200px;
+
+}
+
+[data-theme="orange"]{
+
+    --color-primary:#FF8A1A;
+    --color-primary-600:#FE881A;
+    --color-primary-700:#F97316;
+    --color-primary-soft:#FFF4E6;
+
+    --color-primary-brand:#FF6A3D;
+
+    --color-accent:#FFA204;
+    --color-accent-600:#F97316;
+    --color-accent-soft:#FFF4D6;
+
+    --color-bg:#FFF8F1;
+    --color-surface:#FFFFFF;
+    --color-surface-alt:#F7F7F7;
+
+    --color-border:#E5E7EB;
+    --color-divider:#F1F5F9;
+
+    --color-text:#1F2937;
+    --color-text-soft:#6B7280;
+    --color-text-muted:#9CA3AF;
+
+    --color-success:#22C55E;
+    --color-warning:#F59E0B;
+    --color-danger:#EF4444;
+    --color-info:#3B82F6;
+
+    --shadow-xs:0 1px 3px rgba(0,0,0,.05);
+    --shadow-sm:0 2px 6px rgba(0,0,0,.06);
+    --shadow:0 8px 20px rgba(0,0,0,.08);
+    --shadow-lg:0 16px 40px rgba(0,0,0,.12);
+}
+
+[data-theme="orange"]{
+    --color-primary-gradient:linear-gradient(135deg,#FF8A1A,#FF4D3A,#C4002F);
+}
+
+body{
+    font-family: var(--font-sans), serif;
+    background:var(--color-bg);
+    color:var(--color-text);
+    font-size:.92rem;
+    -webkit-font-smoothing:antialiased;
+}
+
+.container,
+.container-fluid{
+    padding-top:20px;
+    padding-bottom:20px;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+.card{
+    border:none;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);
+}
+
+.card-header{
+    background:#fff;
+    border-bottom:1px solid var(--color-border);
+    font-weight:600;
+}
+
+.card-footer{
+    background:#fff;
+    border-top:1px solid var(--color-border);
+}
+.swal2-popup{
+    border-radius:12px;
+    font-family:var(--font-sans);
+}
+
+.swal2-title{
+    font-size:16px;
+    font-weight:600;
+}
