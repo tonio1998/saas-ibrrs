@@ -6,7 +6,7 @@ export default defineConfig({
         host: 'localhost',
         cors: true,
         hmr: {
-            host: 'saas-ibrss.dev.com'
+            host: 'saas-ibrrs.dev.com'
         }
     },
     plugins: [

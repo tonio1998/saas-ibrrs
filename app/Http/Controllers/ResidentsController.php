@@ -20,6 +20,18 @@ class ResidentsController extends Controller
         return view('pages.residents.index');
     }
 
+    public function show($id)
+    {
+        try {
+            $id = decrypt($id);
+        } catch (\Exception $e) {
+            abort(404);
+        }
+
+        $resident = Residents::with(['info'])->findOrFail($id);
+        return view('pages.residents.show', compact('resident'));
+    }
+
     public function edit($id)
     {
         try {
@@ -130,6 +142,13 @@ class ResidentsController extends Controller
                     <li>
                         <a href="'.route('residents.edit',encrypt($resident->id)).'" class="dropdown-item">
                             <i class="bi bi-pencil me-2"></i> Edit
+                        </a>
+                    </li>';
+
+                $menu[] = '
+                    <li>
+                        <a href="'.route('residents.show',encrypt($resident->id)).'" class="dropdown-item">
+                            <i class="bi bi-eye me-2"></i> Show
                         </a>
                     </li>';
 
