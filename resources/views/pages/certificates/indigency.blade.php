@@ -9,14 +9,12 @@
             line-height: 1.6;
         }
 
-        .center { text-align: center; }
-
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
-        .header h4, .header h5, .header h6 {
+        .header h4, .header h5 {
             margin: 2px 0;
         }
 
@@ -24,17 +22,17 @@
             text-align: center;
             font-size: 20px;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 15px 0 25px;
             text-decoration: underline;
         }
 
         .content {
-            margin-top: 30px;
             text-align: justify;
         }
 
         .indent {
             text-indent: 50px;
+            margin-bottom: 10px;
         }
 
         .signature {
@@ -55,32 +53,25 @@
             text-align: center;
         }
 
-        .bold { font-weight: bold; }
-        .qr {
-            position: absolute;
-            right: 0;
-            top: 0;
-            text-align: center;
-        }
-
         .qr svg {
             width: 100px;
             height: 100px;
         }
 
+        .bold { font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <h5>Republic of the Philippines</h5>
-    <h5>Province of ________</h5>
-    <h5>Municipality of ________</h5>
-    <h4><b>Barangay ________</b></h4>
+    <h5>Province of {{ strtoupper($cert->barangay->province ?? '________') }}</h5>
+    <h5>Municipality of {{ strtoupper($cert->barangay->municipality ?? '________') }}</h5>
+    <h4><b>Barangay {{ strtoupper($cert->barangay->name ?? '________') }}</b></h4>
 </div>
 
 <div class="title">
-    CERTIFICATE OF {{ strtoupper($cert->certificateType->name) }}
+    CERTIFICATE OF INDIGENCY
 </div>
 
 <div class="content">
@@ -90,9 +81,19 @@
     </p>
 
     <p class="indent">
-        This is to certify that <span class="bold">{{ strtoupper($cert->resident->full_name) }}</span>,
-        of legal age, Filipino, and a resident of Barangay ________, Municipality of ________, Province of ________,
-        is known to be of good moral character and law-abiding citizen in the community.
+        This is to certify that
+        <span class="bold">
+            {{ strtoupper($cert->resident->full_name) }}
+        </span>,
+        of legal age, Filipino, and a bona fide resident of Barangay
+        {{ strtoupper($cert->barangay->name ?? '________') }},
+        Municipality of {{ strtoupper($cert->barangay->municipality ?? '________') }},
+        Province of {{ strtoupper($cert->barangay->province ?? '________') }}.
+    </p>
+
+    <p class="indent">
+        This further certifies that the above-named person belongs to an indigent family
+        and has insufficient financial means to support his/her basic needs.
     </p>
 
     <p class="indent">
@@ -102,20 +103,24 @@
 
     <p class="indent">
         Issued this {{ now()->format('jS') }} day of {{ now()->format('F Y') }}
-        at Barangay ________, Municipality of ________.
+        at Barangay {{ strtoupper($cert->barangay->name ?? '________') }}.
     </p>
 
 </div>
 
 <div class="signature">
     <p><b>___________________________</b></p>
-    <p class="bold">Punong Barangay</p>
+    <p class="bold">
+        {{ strtoupper($cert->barangay->chairman_name ?? 'PUNONG BARANGAY') }}
+    </p>
+    <p>Punong Barangay</p>
 </div>
 
 <div class="footer">
 
     <div class="qr">
         <div style="font-size:10px;">Scan to Verify</div>
+        {!! $qr ?? '' !!}
     </div>
 
     <p>Control No: <b>{{ $cert->ControlNo }}</b></p>

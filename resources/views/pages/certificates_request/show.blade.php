@@ -189,7 +189,7 @@
                         @endif
 
                         @if($certificate->remark === 'Approved' && $certificate->certificateRecord)
-                            <a href="{{ route('cert.print',$certificate->ControlNo) }}"
+                            <a target="_blank" href="{{ route('certificate-types.print',$certificate->ControlNo) }}"
                                class="btn btn-dark">
                                 Print Certificate
                             </a>
