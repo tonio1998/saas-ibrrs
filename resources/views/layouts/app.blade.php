@@ -28,7 +28,6 @@
 <x-alerts />
 
 @include('components.footer')
-
+@stack('scripts')
 </body>
 </html>
-@stack('scripts')
