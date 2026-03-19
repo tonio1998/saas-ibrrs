@@ -1,0 +1,27 @@
+.shadow-soft{
+    box-shadow:var(--shadow-sm);
+}
+
+.shadow-hover:hover{
+    box-shadow:var(--shadow);
+}
+
+.rounded-soft{
+    border-radius:var(--radius);
+}
+
+.bg-soft{
+    background:#f9fafb;
+}
+
+.text-muted-soft{
+    color:var(--muted);
+}
+
+.cursor-pointer{
+    cursor:pointer;
+}
+
+.transition{
+    transition:var(--transition);
+}
