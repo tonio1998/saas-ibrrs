@@ -44,7 +44,7 @@ class JobSeekerTemplate implements TemplateInterface
 
     private function microWatermark($pdf, $text = null)
     {
-        $pdf->SetDrawColor(240, 240, 240);
+        $pdf->SetDrawColor(200, 200, 200);
 
         $pageWidth = $pdf->GetPageWidth();
         $pageHeight = $pdf->GetPageHeight();
@@ -127,7 +127,7 @@ class JobSeekerTemplate implements TemplateInterface
         $pdf->Ln(3);
 
         $residentName = strtoupper(trim(($cert?->resident->FirstName ?? '') . ' ' . ($cert?->resident->LastName ?? '')));
-        $address = strtoupper(config('client.barangay') . ', ' . config('client.municipality') . ', ' . config('client.province'));
+        $address = strtoupper($cert?->resident->info->full_address ?? '');
 
         $this->writeMixed($pdf, [
             ['text' => 'This is to certify that '],

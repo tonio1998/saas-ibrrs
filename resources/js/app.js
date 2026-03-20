@@ -8,6 +8,7 @@ import './features/password'
 import './features/select2'
 import './features/select2-address.js'
 import './features/sidebar'
+import './features/address'
 
 import './modules/dashboard'
 import './modules/roles-drag'

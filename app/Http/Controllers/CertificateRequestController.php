@@ -36,6 +36,7 @@ class CertificateRequestController extends Controller
         $data = $request->validate([
             'resident_id' => ['required','integer','exists:residents,id'],
             'certificate_type_id' => ['required','integer','exists:certificate_types,id'],
+            'business_id' => ['nullable','integer','exists:business_information,id'],
             'purpose' => ['required','string','max:150'],
             'remark' => ['nullable','string','max:150'],
         ]);
@@ -256,7 +257,7 @@ class CertificateRequestController extends Controller
 
     public function print($control_no)
     {
-        $cert = CertificateRequest::with(['resident','certificateType', 'certificateRecord'])
+        $cert = CertificateRequest::with(['resident.info','certificateType', 'certificateRecord', 'business'])
             ->where('ControlNo', $control_no)
             ->firstOrFail();
 
@@ -330,29 +331,41 @@ class CertificateRequestController extends Controller
 
     public function ajaxData(Request $request, DataTables $datatables)
     {
-        $query = CertificateRequest::with(['resident','certificateType']);
+        $query = CertificateRequest::with(['resident','certificateType'])->orderBy('id', 'desc');
 
         return $datatables->eloquent($query)
             ->addColumn('actions', function ($row) {
 
-                return '
-            <div class="dropdown">
-                <button class="btn btn-soft-primary dropdown-toggle" data-bs-toggle="dropdown">
-                    Actions
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
+                $printBtn = '';
+
+                if ($row->remark === 'Approved' && $row->certificateRecord) {
+                    $printBtn = '
                     <li>
-                        <a href="'.route('certificates_request.edit',encrypt($row->id)).'" class="dropdown-item">
-                            Edit
+                        <a target="_blank" href="' . route('certificate-types.print', $row->ControlNo) . '" class="dropdown-item">
+                            Print Certificate
                         </a>
-                    </li>
-                    <li>
-                        <a href="'.route('certificates_request.show',encrypt($row->id)).'" class="dropdown-item">
-                            Show
-                        </a>
-                    </li>
-                </ul>
-            </div>';
+                    </li>';
+                        }
+
+                        return '
+                <div class="dropdown">
+                    <button class="btn btn-soft-primary dropdown-toggle" data-bs-toggle="dropdown">
+                        Actions
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a href="' . route('certificates_request.edit', encrypt($row->id)) . '" class="dropdown-item">
+                                Edit
+                            </a>
+                        </li>
+                        <li>
+                            <a href="' . route('certificates_request.show', encrypt($row->id)) . '" class="dropdown-item">
+                                Show
+                            </a>
+                        </li>
+                        ' . $printBtn . '
+                    </ul>
+                </div>';
             })
             ->addColumn('control_no', fn($row)=>$row->ControlNo)
             ->addColumn('resident', fn($row)=>$row->resident->FirstName.' '.$row->resident->LastName)

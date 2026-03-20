@@ -24,21 +24,24 @@ class ResidentInfoController extends Controller
             'full_address' => 'nullable|string|max:600',
         ]);
 
-        $exists = ResidentInfo::where('resident_id', $data['resident_id'])
+        $info = ResidentInfo::where('resident_id', $data['resident_id'])
             ->where('archived', 0)
             ->whereNull('deleted_at')
-            ->exists();
+            ->first();
 
-        if ($exists) {
-            return back()->with('error', 'Resident already has an address.');
+        if ($info) {
+            $info->fill($data);
+            $info->updated_by = auth()->id() ?? 0;
+            $info->save();
+
+            return back()->with('success', 'Address updated successfully.');
         }
 
-//        ResidentInfo::create($data);
+        $info = new ResidentInfo();
+        $info->fill($data);
+        $this->setCommonFields($info);
+        $info->save();
 
-            $info = new ResidentInfo();
-            $info->fill($data);
-            $this->setCommonFields($info);
-            $info->save();
         return back()->with('success', 'Address added successfully.');
     }
 

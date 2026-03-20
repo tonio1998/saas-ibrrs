@@ -155,6 +155,7 @@ Route::middleware('auth')->group(function(){
         Route::get('residents/search',[ResidentsController::class,'residents_search'])->name('residents');
         Route::get('certificate-requests/search',[CertificateRequestController::class,'certificate_requests_search'])->name('certificate-requests');
         Route::get('certificate-types/search',[CertificateTypesController::class,'certificate_types_search'])->name('certificate-types');
+        Route::get('businesses/search',[BusinessInfoController::class,'businesses_search'])->name('businesses');
 
         Route::prefix('address')->group(function () {
             Route::get('/full', [AddressController::class, 'full'])->name('full');
