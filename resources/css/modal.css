@@ -1,0 +1,23 @@
+.modal-backdrop.show {
+    /*backdrop-filter: blur(10px);*/
+    background: rgba(0,0,0,0.6);
+}
+
+.ios-modal-premium {
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255);
+    /*backdrop-filter: blur(25px);*/
+    box-shadow: 0 25px 80px rgba(0,0,0,0.2);
+}
+
+.modal.fade .modal-dialog {
+    transform: scale(0.92) translateY(20px);
+    opacity: 0;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}

@@ -12,6 +12,8 @@
 @import "./utilities.css";
 @import "./datatables.css";
 @import "./select2.css";
+@import "pages/dashboard.css";
+@import "./modal.css";
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";

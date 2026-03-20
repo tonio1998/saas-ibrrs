@@ -51,6 +51,16 @@ class Residents extends Model implements AuditableContract
         'deleted_at',
     ];
 
+    public function getFullNameAttribute()
+    {
+        return collect([
+            $this->FirstName,
+            $this->MiddleName,
+            $this->LastName,
+            $this->Suffix
+        ])->filter()->implode(' ');
+    }
+
     public function info()
     {
         return $this->hasOne(ResidentInfo::class, 'resident_id')

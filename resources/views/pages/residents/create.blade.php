@@ -104,7 +104,7 @@
                     />
                 </x-form.group>
 
-                <x-form.group name="household_id" label="Household" class="col-md-6" required>
+                <x-form.group name="household_id" label="Household" class="col-md-6">
                     <x-form.select
                         name="household_id"
                         ajax="{{ route('select2.households') }}"
