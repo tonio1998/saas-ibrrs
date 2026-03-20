@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BusinessInformation;
 use App\Traits\TCommonFunctions;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;

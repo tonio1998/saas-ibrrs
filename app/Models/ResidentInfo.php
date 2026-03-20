@@ -57,6 +57,16 @@ class ResidentInfo extends Model
         return $value ? ucwords(strtolower($value)) : null;
     }
 
+    public function getFullNameAttribute()
+    {
+        return collect([
+            $this->resident->FirstName,
+            $this->resident->MiddleName,
+            $this->resident->LastName,
+            $this->Suffix
+        ])->filter()->implode(' ');
+    }
+
     public function getFullAddressAttribute()
     {
         return collect([
