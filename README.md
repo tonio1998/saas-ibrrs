@@ -1,59 +1,304 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏛️ Integrated Barangay Records and Services System (IBRSS)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A centralized, scalable web-based platform designed to digitize and streamline barangay operations, including resident records, household management, and service tracking.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The Integrated Barangay Records and Services System (IBRSS) is built to:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Improve data organization and retrieval
+- Streamline barangay operations
+- Replace manual processes with a digital system
+- Provide scalable and modular architecture for future expansion
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🎯 Objectives
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Digitize barangay records
+- Centralize data access
+- Enable advanced filtering and reporting
+- Improve transparency and efficiency
+- Support modular system expansion
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 🛠️ Tech Stack
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Backend
+- Laravel
+- MySQL
+- Yajra DataTables
 
-```bash
-composer require laravel/boost --dev
+### Frontend
+- Blade Components
+- Bootstrap 5
+- jQuery
+- Vite
 
-php artisan boost:install
+---
+
+## 📦 Core Modules
+
+### 🏠 Household Management
+- Create and manage households
+- Assign household head
+- Associate households with Purok
+- Track number of residents
+- Advanced filtering:
+    - Purok
+    - Head status
+    - Date created
+
+### 👤 Resident Management
+- Full resident profiling
+- Link residents to households
+- Demographics:
+    - Gender
+    - Civil Status
+    - Occupation
+    - Voter status
+- Auto-computed age
+- Advanced filtering:
+    - Name
+    - Age range
+    - Gender
+    - Civil status
+    - Household
+    - Voter status
+
+---
+
+## 🧭 Planned Modules
+
+- Barangay Certificates Issuance
+- Clearance Management
+- Financial Tracking
+- Document Tracking System
+- Dashboard & Analytics
+- Mobile Integration (React Native)
+
+---
+
+## 🧠 System Architecture
+
+```
+Frontend (Blade + JS)
+    ↓
+Reusable Components (Modal, DataTable)
+    ↓
+AJAX (DataTables)
+    ↓
+Laravel Controllers
+    ↓
+Eloquent ORM
+    ↓
+MySQL Database
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 🔑 Key Features
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Reusable Component System
+- `<x-modal>` for dialogs
+- `<x-datatable>` for tables
+- Modular UI architecture
 
-## Code of Conduct
+### Advanced Filtering System
+- Uses `data-filter="field"` convention
+- Dynamic and reusable across modules
+- Modal-based filtering
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Example:
+```
+<input data-filter="name">
+<select data-filter="gender">
+```
 
-## Security Vulnerabilities
+### Cache-First Data Loading
+```
+1. Check cache
+2. If valid → render
+3. Else → fetch from API
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Server-Side Processing
+- Efficient handling of large datasets
+- Pagination, sorting, filtering
+- Optimized queries
 
-## License
+### Premium UI/UX
+- macOS-style modal design
+- Apply-based filtering (no auto-fetch)
+- Keyboard support (Enter / ESC)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-"# saas-ibrrs" 
+---
+
+## ⚙️ Installation
+
+### 1. Clone Repository
+```
+git clone <repository-url>
+cd ibrss
+```
+
+### 2. Install Dependencies
+```
+composer install
+npm install
+```
+
+### 3. Environment Setup
+```
+cp .env.example .env
+php artisan key:generate
+```
+
+### 4. Configure Database
+```
+DB_DATABASE=ibrss
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 5. Run Migrations
+```
+php artisan migrate
+```
+
+### 6. Run Application
+```
+php artisan serve
+npm run dev
+```
+
+---
+
+## 🗄️ Database Structure
+
+### Households
+- id
+- household_code
+- purok_id
+- head_id
+- created_at
+
+### Residents
+- id
+- FirstName
+- LastName
+- BirthDate
+- gender
+- CivilStatus
+- Occupation
+- is_voter
+- household_id
+- created_by
+
+---
+
+## ⚡ Performance Optimization
+
+### Database Indexing
+```
+INDEX(gender)
+INDEX(CivilStatus)
+INDEX(is_voter)
+INDEX(BirthDate)
+INDEX(created_at)
+```
+
+### Query Optimization
+- Use `with()` to avoid N+1 queries
+- Use `whereHas()` for relationships
+- Minimize repeated computations
+
+### Frontend Optimization
+- Cache-first rendering
+- Apply-only filtering
+- Efficient DOM updates
+
+---
+
+## 🧪 Debugging Guide
+
+### Check Filters
+```
+console.log(getFilters())
+```
+
+### Check Network Requests
+- Open DevTools → Network → XHR
+- Inspect request payload
+
+### Common Issues
+
+| Issue | Cause |
+|------|------|
+| Filters not working | Missing `data-filter` |
+| No results | Backend mismatch |
+| Slow queries | Missing indexes |
+| Duplicate rows | DataTable re-init |
+
+---
+
+## 🔄 Scalability
+
+- Easily add new modules
+- Reuse modal + datatable system
+- Ready for API and mobile integration
+
+---
+
+## 🔐 Security
+
+- CSRF protection (Laravel)
+- Encrypted route parameters
+- Input validation
+- Role-based access (future)
+
+---
+
+## 🔮 Future Enhancements
+
+- Role & Permission System
+- Audit Logs
+- File Uploads
+- Offline Sync (mobile)
+- GIS Integration
+- Multi-barangay support (multi-tenant)
+
+---
+
+## 🧑‍💻 Developer Notes
+
+- Use `data-filter` convention
+- Avoid hardcoded selectors
+- Use Blade components
+- Keep logic modular
+
+---
+
+## 📌 Development Commands
+
+To continue development with ChatGPT:
+
+- continue datatable system
+- continue residents module
+- continue households module
+- continue modal filter system
+
+---
+
+## ✅ Summary
+
+IBRSS provides:
+
+- Centralized barangay data management
+- Scalable modular architecture
+- High-performance data handling
+- Clean and modern UI/UX
+- Future-ready system design

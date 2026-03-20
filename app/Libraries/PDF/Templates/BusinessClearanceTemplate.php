@@ -100,10 +100,10 @@ class BusinessClearanceTemplate implements TemplateInterface
         $business = strtoupper($cert->business->business_name ?? '');
         $location = strtoupper($cert->business->full_address ?? '');
 
-        if($cert->business->operator_type === 'resident'){
-            $owner = strtoupper(trim(($cert->resident->info->full_name ?? '')));
+        if($cert?->business?->operator_type === 'resident'){
+            $owner = strtoupper(trim(($cert?->resident->info->full_name ?? '')));
         }else{
-            $owner = strtoupper(trim(($cert->business->operator_name ?? '')));
+            $owner = strtoupper(trim(($cert?->business->operator_name ?? '')));
         }
 
         $address = strtoupper($cert?->resident->info->full_address ?? '');
