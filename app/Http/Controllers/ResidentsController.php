@@ -129,7 +129,7 @@ class ResidentsController extends Controller
         $resident->save();
 
         return redirect()
-            ->route('residents.index')
+            ->route('residents.show',encrypt($resident->id))
             ->with('success','Resident created successfully');
     }
 
