@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Households;
-use App\Models\Puroks;
 use App\Traits\TCommonFunctions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,8 +14,7 @@ class HouseholdsController extends Controller
     use TCommonFunctions;
     public function index()
     {
-        $puroks = Puroks::get();
-        return view('pages.households.index', compact('puroks'));
+        return view('pages.households.index');
     }
 
     public function create()

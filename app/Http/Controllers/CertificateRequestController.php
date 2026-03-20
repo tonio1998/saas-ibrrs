@@ -398,6 +398,11 @@ class CertificateRequestController extends Controller
             ->editColumn('requested_at', fn($row) => optional($row->requested_at)->format('M d, Y h:i A'))
             ->editColumn('created_at', fn($row) => optional($row->created_at)->format('M d, Y h:i A'))
             ->rawColumns(['actions', 'status_badge'])
+                return '<span class="badge bg-'.$color.'">'.$row->remark.'</span>';
+            })
+            ->editColumn('requested_at', fn($row)=>$row->requested_at?->format('M d, Y h:i A'))
+            ->editColumn('created_at', fn($row)=>$row->created_at?->format('M d, Y h:i A'))
+            ->rawColumns(['actions','status_badge'])
             ->make(true);
     }
 
