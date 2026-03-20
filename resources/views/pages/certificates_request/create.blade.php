@@ -31,10 +31,10 @@
                     @if($isEdit) @method('PUT') @endif
 
                     <div class="row g-4">
-
                         <x-form.group name="resident_id" label="Resident" class="col-md-12">
                             <x-form.select
                                 name="resident_id"
+                                id="resident_id"
                                 ajax="{{ route('select2.residents') }}"
                                 value="{{ old('resident_id', $certificate?->resident_id) }}"
                                 text="{{ $certificate && $certificate->resident
@@ -47,6 +47,7 @@
                         <x-form.group name="certificate_type_id" label="Document Type" class="col-md-12">
                             <x-form.select
                                 name="certificate_type_id"
+                                id="certificate_type_id"
                                 ajax="{{ route('select2.certificate-types') }}"
                                 value="{{ old('certificate_type_id', $certificate?->certificate_type_id) }}"
                                 text="{{ $certificate && $certificate->certificateType
@@ -55,6 +56,19 @@
                                 placeholder="Select Document Type"
                             />
                         </x-form.group>
+
+                        <div class="business-field d-none">
+                            <x-form.group name="business_id" label="Business" class="col-md-12">
+{{--                                <x-form.select--}}
+{{--                                    name="business_id"--}}
+{{--                                    ajax="{{ route('select2.businesses') }}"--}}
+{{--                                    value="{{ old('business_id') }}"--}}
+{{--                                    text=""--}}
+{{--                                    placeholder="Select Business"--}}
+{{--                                />--}}
+                                <select name="business_id" class="form-select get-resident-business"></select>
+                            </x-form.group>
+                        </div>
 
                         <x-form.group name="purpose" label="Purpose" class="col-md-12">
                             <x-form.input

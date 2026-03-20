@@ -95,7 +95,7 @@ class AddressController extends Controller
     public function barangays(Request $request)
     {
         $search = $request->input('search');
-        $city = $request->input('citymun');
+        $city = $request->input('city');
 
         $data = Barangays::query()
             ->when($city, function ($q) use ($city) {
