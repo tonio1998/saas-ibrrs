@@ -9,7 +9,45 @@ use Endroid\QrCode\Writer\PngWriter;
 class BusinessClearanceTemplate implements TemplateInterface
 {
     private float $margin = 12;
+    private function microWatermark($pdf, $text = null)
+    {
+        $pdf->SetDrawColor(200, 200, 200);
 
+        $pageWidth = $pdf->GetPageWidth();
+        $pageHeight = $pdf->GetPageHeight();
+
+        $count = 350; // reduced density
+
+        for ($i = 0; $i < $count; $i++) {
+
+            $startX = mt_rand(0, (int)$pageWidth);
+            $startY = mt_rand(0, (int)$pageHeight);
+
+            $length = mt_rand(3, 7); // much shorter (hair-like)
+            $angle = deg2rad(mt_rand(0, 360));
+            $curve = mt_rand(-1, 1); // very subtle curve
+
+            $prevX = $startX;
+            $prevY = $startY;
+
+            $segments = 3; // fewer segments = simpler stroke
+
+            for ($s = 1; $s <= $segments; $s++) {
+
+                $t = $s / $segments;
+
+                $x = $startX + cos($angle) * $length * $t;
+                $y = $startY + sin($angle) * $length * $t;
+
+                $y += sin($t * pi()) * $curve;
+
+                $pdf->Line($prevX, $prevY, $x, $y);
+
+                $prevX = $x;
+                $prevY = $y;
+            }
+        }
+    }
     public function render($pdf, $cert): void
     {
         $pdf->SetMargins($this->margin, $this->margin, $this->margin);
@@ -19,6 +57,10 @@ class BusinessClearanceTemplate implements TemplateInterface
         $w = $pdf->GetPageWidth();
         $cw = $w - ($this->margin * 2);
 
+        $text = strtoupper(config('client.watermark'));
+        $pdf->SetTextColor(rand(220,235), rand(220,235), rand(220,235));
+        $this->microWatermark($pdf, $text);
+        $pdf->SetTextColor(0, 0, 0);
         /* LOGOS */
         $pdf->Image(public_path('images/logo-left.png'), $this->margin, 15, 20);
         $pdf->Image(public_path('images/logo-right.png'), $w - $this->margin - 20, 15, 20);
@@ -37,7 +79,7 @@ class BusinessClearanceTemplate implements TemplateInterface
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->Cell($cw, 6, 'OFFICE OF THE PUNONG BARANGAY', 0, 1, 'C');
 
-        $pdf->Ln(3);
+        $pdf->Ln(1);
 
         $pdf->SetFont('Arial', 'B', 13);
         $pdf->Cell($cw, 6, 'BARANGAY BUSINESS CLEARANCE', 0, 1, 'C');
@@ -55,15 +97,22 @@ class BusinessClearanceTemplate implements TemplateInterface
         $pdf->Ln(3);
 
         /* UNDERLINED FIELDS */
-        $business = strtoupper($cert->business_name ?? '');
-        $location = strtoupper($cert->business_address ?? '');
-        $owner = strtoupper(trim(($cert?->resident->FirstName ?? '') . ' ' . ($cert?->resident->LastName ?? '')));
-        $address = strtoupper(config('client.barangay'));
+        $business = strtoupper($cert->business->business_name ?? '');
+        $location = strtoupper($cert->business->full_address ?? '');
+
+        if($cert->business->operator_type === 'resident'){
+            $owner = strtoupper(trim(($cert->resident->info->full_name ?? '')));
+        }else{
+            $owner = strtoupper(trim(($cert->business->operator_name ?? '')));
+        }
+
+        $address = strtoupper($cert?->resident->info->full_address ?? '');
+
 
         $this->lineField($pdf, $cw, $business, '(Business Name or Trade Activity)');
-        $this->lineField($pdf, $cw, $location, '(Location)');
+        $this->lineField($pdf, $cw, $location, '(Location)', 9);
         $this->lineField($pdf, $cw, $owner, '(Operator/Manager)');
-        $this->lineField($pdf, $cw, $address, '(Address)');
+        $this->lineField($pdf, $cw, $address, '(Address)', 9);
 
         $pdf->Ln(6);
 
@@ -100,7 +149,7 @@ class BusinessClearanceTemplate implements TemplateInterface
             " at Barangay " . config('client.barangay') . ".", 0, 1
         );
 
-        $pdf->Ln(15);
+        $pdf->Ln(7);
 
         /* SIGNATURE */
         $pdf->SetFont('Arial', 'B', 11);
@@ -115,27 +164,27 @@ class BusinessClearanceTemplate implements TemplateInterface
         $pdf->SetFont('Arial', 'I', 9);
         $pdf->Cell($cw, 5, '(Note: Not Valid without Barangay Dry Seal)', 0, 1);
 
-        $pdf->Ln(3);
+        $pdf->Ln(15);
 
         $pdf->SetFont('Arial', '', 10);
         $pdf->Cell($cw, 5, 'Paid Under:', 0, 1);
 
-        $pdf->Ln(7);
+        $pdf->Ln(4);
 
-        $this->footerLine2($pdf, 'O.R. No.:', $cert?->certificateRecord?->or_number ?? '', 'TIN No.:', $cert->tin_no ?? '');
+        $this->footerLine2($pdf, 'O.R. No.:', $cert?->certificateRecord?->or_number ?? '', 'TIN No.:', $cert->business->TinNo ?? '');
         $this->footerLine2($pdf, 'Date Paid:', date('M d, Y h:i:s A', strtotime($cert?->certificateRecord?->payment_date)) ?? '', 'Date Issued:', date('M d, Y', strtotime($cert?->certificateRecord?->payment_date)) ?? '');
         $this->footerLine2($pdf, 'Place:', config('client.barangay'), 'Place Issued:', config('client.barangay'));
 
         /* QR */
         $qr = $this->generateQR($cert);
-        $pdf->Image($qr, $w - $this->margin - 35, 242, 35);
+        $pdf->Image($qr, $w - $this->margin - 35, 230, 35);
 
         if (file_exists($qr)) unlink($qr);
     }
 
-    private function lineField($pdf, $width, $value, $label)
+    private function lineField($pdf, $width, $value, $label, $fontSize = 11)
     {
-        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->SetFont('Arial', 'B', $fontSize);
 
         $pdf->Cell($width, 6, '', 0, 1);
         $y = $pdf->GetY();

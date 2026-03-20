@@ -19,6 +19,7 @@ class CertificateRequest extends Model
         'ControlNo',
         'resident_id',
         'certificate_type_id',
+        'business_id',
         'purpose',
         'remark',
         'requested_at',
@@ -70,6 +71,11 @@ class CertificateRequest extends Model
     public function certificateRecord()
     {
         return $this->hasOne(Certificates::class, 'request_id');
+    }
+
+    public function business()
+    {
+        return $this->belongsTo(BusinessInformation::class, 'business_id');
     }
 
     public function resident()

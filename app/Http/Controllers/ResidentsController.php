@@ -28,7 +28,8 @@ class ResidentsController extends Controller
             abort(404);
         }
 
-        $resident = Residents::with(['info'])->findOrFail($id);
+        $resident = Residents::with(['info', 'businesses'])->findOrFail($id);
+//        dd($resident);
         return view('pages.residents.show', compact('resident'));
     }
 

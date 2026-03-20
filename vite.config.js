@@ -3,10 +3,10 @@ import laravel from 'laravel-vite-plugin'
 
 export default defineConfig({
     server: {
-        host: 'localhost',
+        host: '127.0.0.1',
         cors: true,
         hmr: {
-            host: 'saas-ibrrs.dev.com'
+            host: '127.0.0.1'
         }
     },
     plugins: [
