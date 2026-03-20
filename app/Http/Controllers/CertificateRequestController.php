@@ -331,7 +331,22 @@ class CertificateRequestController extends Controller
 
     public function ajaxData(Request $request, DataTables $datatables)
     {
-        $query = CertificateRequest::with(['resident','certificateType'])->orderBy('id', 'desc');
+        $query = CertificateRequest::query()
+            ->with([
+                'resident:id,FirstName,MiddleName,LastName,Suffix',
+                'certificateType:id,name',
+                'certificateRecord:id,request_id'
+            ])
+            ->select([
+                'id',
+                'ControlNo',
+                'resident_id',
+                'certificate_type_id',
+                'remark',
+                'requested_at',
+                'created_at'
+            ])
+            ->latest('id');
 
         return $datatables->eloquent($query)
             ->addColumn('actions', function ($row) {
@@ -340,44 +355,49 @@ class CertificateRequestController extends Controller
 
                 if ($row->remark === 'Approved' && $row->certificateRecord) {
                     $printBtn = '
+                <li>
+                    <a target="_blank" href="' . route('certificate-types.print', $row->ControlNo) . '" class="dropdown-item">
+                        Print Certificate
+                    </a>
+                </li>';
+                }
+
+                return '
+            <div class="dropdown">
+                <button class="btn btn-soft-primary dropdown-toggle" data-bs-toggle="dropdown">
+                    Actions
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a target="_blank" href="' . route('certificate-types.print', $row->ControlNo) . '" class="dropdown-item">
-                            Print Certificate
+                        <a href="' . route('certificates_request.edit', encrypt($row->id)) . '" class="dropdown-item">
+                            Edit
                         </a>
-                    </li>';
-                        }
-
-                        return '
-                <div class="dropdown">
-                    <button class="btn btn-soft-primary dropdown-toggle" data-bs-toggle="dropdown">
-                        Actions
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a href="' . route('certificates_request.edit', encrypt($row->id)) . '" class="dropdown-item">
-                                Edit
-                            </a>
-                        </li>
-                        <li>
-                            <a href="' . route('certificates_request.show', encrypt($row->id)) . '" class="dropdown-item">
-                                Show
-                            </a>
-                        </li>
-                        ' . $printBtn . '
-                    </ul>
-                </div>';
+                    </li>
+                    <li>
+                        <a href="' . route('certificates_request.show', encrypt($row->id)) . '" class="dropdown-item">
+                            Show
+                        </a>
+                    </li>
+                    ' . $printBtn . '
+                </ul>
+            </div>';
             })
-            ->addColumn('control_no', fn($row)=>$row->ControlNo)
-            ->addColumn('resident', fn($row)=>$row->resident->FirstName.' '.$row->resident->LastName)
-            ->addColumn('type', fn($row)=>$row->certificateType->name ?? '-')
-            ->addColumn('status_badge', function($row){
+            ->addColumn('control_no', fn($row) => $row->ControlNo)
+            ->addColumn('resident', fn($row) => $row->resident->full_name ?? '')
+            ->addColumn('type', fn($row) => $row->certificateType->name ?? '-')
+            ->addColumn('status_badge', function ($row) {
 
-                $color = match($row->remark){
+                $color = match ($row->remark) {
                     'Approved' => 'success',
                     'Rejected' => 'danger',
                     default => 'warning'
                 };
 
+                return '<span class="badge bg-' . $color . '">' . $row->remark . '</span>';
+            })
+            ->editColumn('requested_at', fn($row) => optional($row->requested_at)->format('M d, Y h:i A'))
+            ->editColumn('created_at', fn($row) => optional($row->created_at)->format('M d, Y h:i A'))
+            ->rawColumns(['actions', 'status_badge'])
                 return '<span class="badge bg-'.$color.'">'.$row->remark.'</span>';
             })
             ->editColumn('requested_at', fn($row)=>$row->requested_at?->format('M d, Y h:i A'))

@@ -3,7 +3,7 @@
         <a class="navbar-brand d-flex align-items-center gap-3">
             <div class="brand-logo">
                 <img
-                    src="{{ asset('logo.png') }}"
+                    src="{{ asset('images/logo-left.png') }}"
                     alt="School Logo"
                     class="logo-img"
                 >

@@ -107,7 +107,7 @@ class ResidentsController extends Controller
                 'BirthDate'     => ['required','date'],
                 'CivilStatus'   => ['nullable','string','max:50'],
                 'Occupation'    => ['nullable','string','max:100'],
-                'household_id'  => ['required','exists:households,id'],
+                'household_id'  => ['nullable','exists:households,id'],
                 'is_head'       => ['nullable','boolean'],
                 'is_voter'      => ['nullable','boolean'],
             ],
@@ -136,6 +136,51 @@ class ResidentsController extends Controller
     public function ajaxData(Request $request, DataTables $datatables)
     {
         $query = Residents::with(['createdBy','household']);
+        if ($request->filled('name')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('FirstName', 'like', "%{$request->name}%")
+                    ->orWhere('LastName', 'like', "%{$request->name}%");
+            });
+        }
+
+        if ($request->filled('gender')) {
+            $query->where('gender', $request->gender);
+        }
+
+        if ($request->filled('civil_status')) {
+            $query->where('CivilStatus', $request->civil_status);
+        }
+
+        if ($request->filled('occupation')) {
+            $query->where('Occupation', 'like', "%{$request->occupation}%");
+        }
+
+        if ($request->filled('voter')) {
+            $query->where('is_voter', $request->voter);
+        }
+
+        if ($request->filled('household')) {
+            $query->whereHas('household', function ($q) use ($request) {
+                $q->where('household_code', 'like', "%{$request->household}%");
+            });
+        }
+
+        if ($request->filled('age_from')) {
+            $query->whereRaw('TIMESTAMPDIFF(YEAR, BirthDate, CURDATE()) >= ?', [$request->age_from]);
+        }
+
+        if ($request->filled('age_to')) {
+            $query->whereRaw('TIMESTAMPDIFF(YEAR, BirthDate, CURDATE()) <= ?', [$request->age_to]);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
         return $datatables->eloquent($query)
             ->addColumn('actions', function ($resident) {
                 $menu = [];
@@ -166,10 +211,7 @@ class ResidentsController extends Controller
                     </div>';
             })
             ->addColumn('name', function ($resident) {
-                $name = $resident->FirstName.' '.$resident->LastName;
-                if($resident->Suffix){
-                    $name .= ' '.$resident->Suffix;
-                }
+                $name = $resident?->full_name;
                 $html = "<div class='fw-bold'>{$name}</div>";
                 return $html;
             })
@@ -178,7 +220,7 @@ class ResidentsController extends Controller
                 if(!$resident->household) return '-';
 
                 return "
-                <div>{$resident->household->household_code}</div>
+                <div>{$resident?->household?->household_code}</div>
             ";
             })
             ->addColumn('gender', function ($resident) {
@@ -188,7 +230,7 @@ class ResidentsController extends Controller
                 return $resident->BirthDate ? \Carbon\Carbon::parse($resident->BirthDate)->format('M d, Y') : '-';
             })
             ->addColumn('age', function ($resident) {
-                return $resident->BirthDate ? \Carbon\Carbon::parse($resident->BirthDate)->age : '-';
+                return $resident->BirthDate ? now()->parse($resident->BirthDate)->age : '-';
             })
             ->addColumn('civil_status', function ($resident) {
                 return $resident->CivilStatus ?? '-';
@@ -203,11 +245,13 @@ class ResidentsController extends Controller
                 return $resident->created_at->format('M d, Y h:i A');
             })
             ->addColumn('createdBy', function ($resident) {
-                return $resident->createdBy->name ?? '-';
+                return $resident?->createdBy->name ?? '-';
             })
-            ->filterColumn('household', function ($query, $keyword) {
-                return $query->where('FirstName', 'like', "%{$keyword}%")
-                    ->orWhere('LastName', 'like', "%{$keyword}%");
+            ->filterColumn('name', function ($query, $keyword) {
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('FirstName', 'like', "%{$keyword}%")
+                        ->orWhere('LastName', 'like', "%{$keyword}%");
+                });
             })
             ->rawColumns(['actions','name','household','voter'])
             ->make(true);

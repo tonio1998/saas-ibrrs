@@ -121,11 +121,32 @@ class HouseholdsController extends Controller
 
     public function ajaxData(Request $request, DataTables $datatables)
     {
-        $query = Households::with(['purok','head'])->withCount('residents');
+        $query = Households::with(['purok','head'])
+            ->withCount('residents')
+            ->orderByDesc('id');
+
+        if ($request->filled('purok')) {
+            $query->where('purok_id', $request->purok);
+        }
+
+        if ($request->filled('has_head')) {
+            if ($request->has_head == '1') {
+                $query->where('head_id', '>', 0);
+            } else {
+                $query->whereIn('head_id', [NULL, 0]);
+            }
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
 
         return $datatables->eloquent($query)
             ->addColumn('actions', function ($row) {
-
                 return '
             <div class="dropdown">
                 <button class="btn btn-soft-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
@@ -140,22 +161,22 @@ class HouseholdsController extends Controller
                 </ul>
             </div>';
             })
-            ->addColumn('purok', function ($row) {
-                return $row->purok
-                    ? 'Puroks '.$row->purok->PurokNo.' - '.$row->purok->PurokName
-                    : '-';
-            })
-            ->addColumn('head', function ($row) {
-                return $row->head
-                    ? '<div class="fw-bold">'.$row->head->FirstName.' '.$row->head->LastName.'</div>'
-                    : '<span class="badge bg-danger">No head</span>';
-            })
-            ->addColumn('members', function ($row) {
-                return '<span class="badge bg-primary">'.$row->residents_count.'</span>';
-            })
-            ->editColumn('created_at', function ($row) {
-                return $row->created_at ? $row->created_at->format('M d, Y h:i A') : '-';
-            })
+            ->addColumn('purok', fn($row) =>
+            $row->purok
+                ? 'Purok '.$row->purok->PurokNo.' - '.$row->purok->PurokName
+                : '-'
+            )
+            ->addColumn('head', fn($row) =>
+            $row->head
+                ? '<div class="fw-bold">'.$row->head->FirstName.' '.$row->head->LastName.'</div>'
+                : '<span class="badge bg-danger">No head</span>'
+            )
+            ->addColumn('members', fn($row) =>
+                '<span class="badge bg-primary">'.$row->residents_count.'</span>'
+            )
+            ->editColumn('created_at', fn($row) =>
+                $row->created_at?->format('M d, Y h:i A') ?? '-'
+            )
             ->rawColumns(['actions','members','head'])
             ->make(true);
     }

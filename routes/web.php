@@ -3,7 +3,6 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\BusinessInfoController;
 use App\Http\Controllers\CertificateRequestController;
-use App\Http\Controllers\CertificateRequestsController;
 use App\Http\Controllers\CertificatesController;
 use App\Http\Controllers\CertificateTypesController;
 use App\Http\Controllers\DashboardController;
@@ -18,6 +17,7 @@ use App\Http\Controllers\ScannerController;
 use App\Http\Controllers\ResidentsController;
 use App\Http\Controllers\TeachersController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -55,11 +55,6 @@ Route::middleware('auth')->group(function(){
         Route::get('/{user}/permissions', [UserController::class,'editPermissions'])->name('permissions');
         Route::put('/{user}/roles',[UserController::class,'updateRoles'])->name('roles.update');
         Route::put('/{user}/permissions',[UserController::class,'updatePermissions'])->name('permissions.update');
-    });
-
-    Route::prefix('logs')->name('logs.')->group(function(){
-        Route::get('/index', [LogsController::class, 'index'])->name('index');
-        Route::get('/data', [LogsController::class, 'logs_data'])->name('data');
     });
 
     Route::prefix('households')->name('households.')->group(function(){
