@@ -79,11 +79,11 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a href="{{ route('certificate-types.index') }}" class="btn btn-light btn-sm">
+                        <a href="{{ route('certificate-types.index') }}" class="btn btn-light btn-md">
                             Cancel
                         </a>
 
-                        <button type="submit" class="btn btn-primary btn-sm">
+                        <button type="submit" class="btn btn-primary btn-md">
                             {{ $isEdit ? 'Update' : 'Save Certificate Type' }}
                         </button>
                     </div>
