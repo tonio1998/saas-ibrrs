@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Households;
 use App\Models\Puroks;
 use App\Traits\TCommonFunctions;
 use Illuminate\Http\Request;
@@ -119,31 +120,107 @@ class PuroksController extends Controller
         return response()->json(['success'=>true]);
     }
 
-    public function ajaxData(Request $request)
+    public function show($id)
     {
-        $query = Puroks::query();
+        try {
+            $id = decrypt($id);
+        } catch (\Exception $e) {
+            abort(404);
+        }
+
+        $purok = Puroks::with('households')->findOrFail($id);
+        return view('pages.puroks.show', compact('purok'));
+    }
+
+    public function households(Request $request)
+    {
+        $purokId = $request->input('PurokNo');
+        $query = Households::query()
+            ->with(['resident'])
+            ->withCount('residents')
+            ->orderBy('household_code', 'asc')
+            ->where('purok_id', $purokId);
 
         return DataTables::eloquent($query)
             ->addColumn('actions', function ($row) {
 
+                $menu = [];
+                $menu[] = '
+                    <li>
+                        <a href="'.route('puroks.show',encrypt($row->id)).'" class="dropdown-item">
+                            <i class="bi bi-eye me-2"></i> Show
+                        </a>
+                    </li>';
+
                 return '
                 <div class="dropdown">
-                    <button class="btn btn-soft-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                    <button class="btn btn-soft-primary btn-md dropdown-toggle" data-bs-toggle="dropdown">
                         Actions
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a href="'.route('puroks.edit',encrypt($row->id)).'" class="dropdown-item">
-                                <i class="bi bi-pencil me-2"></i> Edit
-                            </a>
-                        </li>
+                        '.collect($menu)->implode('').'
                     </ul>
                 </div>';
+            })
+            ->addColumn('households_code', fn($row) => $row->household_code)
+            ->addColumn('residents_count', function ($row) {
+                return '<span class="badge bg-primary">'.$row->residents_count.'</span>';
+            })
+            ->addColumn('head_id', function ($row) {
+                return $row->resident
+                    ? '<div class="fw-bold">'.$row->resident->full_name.'</div>'
+                    : '<span class="badge bg-danger">No head</span>';
+            })
+            ->editColumn('created_at', fn($row) => $row->created_at->format('M d, Y h:i A'))
+            ->rawColumns(['actions','households_code','head_id','created_at', 'residents_count'])
+            ->make(true);
+    }
+
+    public function ajaxData(Request $request)
+    {
+        $query = Puroks::query()
+        ->withCount(['households']);
+
+        return DataTables::eloquent($query)
+            ->addColumn('actions', function ($row) {
+
+                $menu = [];
+                $menu[] = '
+                    <li>
+                        <a href="'.route('puroks.edit',encrypt($row->id)).'" class="dropdown-item">
+                            <i class="bi bi-pencil me-2"></i> Edit
+                        </a>
+                    </li>';
+
+                $menu[] = '
+                    <li>
+                        <a href="'.route('puroks.show',encrypt($row->id)).'" class="dropdown-item">
+                            <i class="bi bi-eye me-2"></i> Show
+                        </a>
+                    </li>';
+
+
+                return '
+                <div class="dropdown">
+                    <button class="btn btn-soft-primary btn-md dropdown-toggle" data-bs-toggle="dropdown">
+                        Actions
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        '.collect($menu)->implode('').'
+                    </ul>
+                </div>';
+            })
+            ->addColumn('households_count', function ($row) {
+                $str = $row->households_count > 1
+                    ? $row->households_count . ' households'
+                    : '1 household';
+
+                return '<span class="badge bg-primary">' . $str . '</span>';
             })
             ->editColumn('created_at', function ($row) {
                 return $row->created_at->format('M d, Y h:i A');
             })
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'households_count'])
             ->make(true);
     }
 

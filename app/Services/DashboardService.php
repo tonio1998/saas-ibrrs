@@ -4,32 +4,10 @@ namespace App\Services;
 
 use App\Models\Households;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardService
 {
-    public function getData($purokId = 'all', $year = null)
-    {
-        $purokId = $this->normalizePurok($purokId);
-        $year = $year ?: date('Y');
-
-        return [
-            'cards' => $this->getCards($purokId),
-
-            'charts' => [
-                'gender' => $this->format($this->getGender($purokId)),
-                'purok' => $this->format($this->getPurok($purokId)),
-                'age_groups' => $this->format($this->getAgeGroups($purokId)),
-                'civil_status' => $this->format($this->getCivilStatus($purokId)),
-            ],
-
-            'operations' => [
-                'certificates' => $this->format($this->getCertificateStats($purokId, $year)),
-                'monthly' => $this->format($this->getMonthlyTransactions($purokId, $year)),
-                'revenue' => $this->getRevenue($purokId, $year),
-            ]
-        ];
-    }
-
     private function normalizePurok($purokId)
     {
         return (!$purokId || strtolower($purokId) === 'all') ? 'all' : $purokId;
@@ -38,66 +16,73 @@ class DashboardService
     private function filterPurok($query, $purokId, $column = 'households.purok_id')
     {
         if ($purokId === 'all') return $query;
-
-        try {
-            return $query->where($column, $purokId);
-        } catch (\Throwable $e) {
-            return $query;
-        }
+        return $query->where($column, $purokId);
     }
 
-    private function getCards($purokId)
+    private function baseResidentsQuery($purokId)
     {
-        $residents = DB::table('residents')
-            ->join('households', 'residents.household_id', '=', 'households.id');
-
-        $households = Households::query();
-
-        $residents = $this->filterPurok($residents, $purokId);
-        $households = $households->when($purokId !== 'all', fn($q) =>
-        $q->where('households.purok_id', $purokId)
+        return $this->filterPurok(
+            DB::table('residents')
+                ->join('households', 'residents.household_id', '=', 'households.id'),
+            $purokId
         );
-
-        $totalResidents = (clone $residents)->count();
-        $totalHouseholds = (clone $households)->count();
-
-        return [
-            'residents' => $totalResidents,
-            'households' => $totalHouseholds,
-            'voters' => (clone $residents)->where('residents.is_voter', 1)->count(),
-            'senior' => (clone $residents)
-                ->whereRaw('TIMESTAMPDIFF(YEAR, residents.BirthDate, CURDATE()) >= 60')
-                ->count(),
-            'avg_household_size' => round($totalResidents / max($totalHouseholds, 1), 2),
-        ];
     }
 
-    private function getGender($purokId)
+    private function baseCertificatesQuery($purokId, $year)
     {
-        $query = DB::table('residents')
-            ->join('households', 'residents.household_id', '=', 'households.id');
+        return $this->filterPurok(
+            DB::table('certificate_requests')
+                ->join('residents', 'certificate_requests.resident_id', '=', 'residents.id')
+                ->join('households', 'residents.household_id', '=', 'households.id')
+                ->whereYear('certificate_requests.requested_at', $year),
+            $purokId
+        );
+    }
 
-        $query = $this->filterPurok($query, $purokId);
+    public function getCards($purokId, $year)
+    {
+        $purokId = $this->normalizePurok($purokId);
+        $year = $year ?: date('Y');
 
-        return $query
+        return Cache::remember("cards:$purokId:$year", 300, function () use ($purokId, $year) {
+
+            $stats = $this->baseResidentsQuery($purokId)
+                ->selectRaw("
+                    COUNT(*) as total,
+                    SUM(CASE WHEN residents.is_voter = 1 THEN 1 ELSE 0 END) as voters,
+                    SUM(CASE WHEN residents.BirthDate <= DATE_SUB(CURDATE(), INTERVAL 60 YEAR) THEN 1 ELSE 0 END) as senior
+                ")
+                ->first();
+
+            $households = Households::when($purokId !== 'all', fn($q) => $q->where('purok_id', $purokId))->count();
+
+            return [
+                'residents' => $stats->total ?? 0,
+                'households' => $households,
+                'voters' => $stats->voters ?? 0,
+                'senior' => $stats->senior ?? 0,
+                'avg_household_size' => round(($stats->total ?? 0) / max($households, 1), 2),
+                'revenue' => $this->getRevenue($purokId, $year),
+            ];
+        });
+    }
+
+    public function getGender($purokId)
+    {
+        return $this->baseResidentsQuery($purokId)
             ->selectRaw('residents.gender, COUNT(*) as total')
             ->groupBy('residents.gender')
             ->pluck('total', 'residents.gender');
     }
 
-    private function getAgeGroups($purokId)
+    public function getAgeGroups($purokId)
     {
-        $query = DB::table('residents')
-            ->join('households', 'residents.household_id', '=', 'households.id');
-
-        $query = $this->filterPurok($query, $purokId);
-
-        return $query
+        return $this->baseResidentsQuery($purokId)
             ->selectRaw("
                 CASE
-                    WHEN TIMESTAMPDIFF(YEAR, residents.BirthDate, CURDATE()) <= 12 THEN 'Child'
-                    WHEN TIMESTAMPDIFF(YEAR, residents.BirthDate, CURDATE()) BETWEEN 13 AND 17 THEN 'Teen'
-                    WHEN TIMESTAMPDIFF(YEAR, residents.BirthDate, CURDATE()) BETWEEN 18 AND 59 THEN 'Adult'
+                    WHEN residents.BirthDate >= DATE_SUB(CURDATE(), INTERVAL 12 YEAR) THEN 'Child'
+                    WHEN residents.BirthDate >= DATE_SUB(CURDATE(), INTERVAL 17 YEAR) THEN 'Teen'
+                    WHEN residents.BirthDate >= DATE_SUB(CURDATE(), INTERVAL 59 YEAR) THEN 'Adult'
                     ELSE 'Senior'
                 END as age_group,
                 COUNT(*) as total
@@ -106,83 +91,84 @@ class DashboardService
             ->pluck('total', 'age_group');
     }
 
-    private function getCivilStatus($purokId)
+    public function getCivilStatus($purokId)
     {
-        $query = DB::table('residents')
-            ->join('households', 'residents.household_id', '=', 'households.id');
-
-        $query = $this->filterPurok($query, $purokId);
-
-        return $query
+        return $this->baseResidentsQuery($purokId)
             ->selectRaw('residents.CivilStatus, COUNT(*) as total')
             ->groupBy('residents.CivilStatus')
             ->pluck('total', 'CivilStatus');
     }
 
-    private function getPurok($purokId)
+    public function getPurok($purokId)
     {
-        $query = DB::table('households')
-            ->join('puroks', 'households.purok_id', '=', 'puroks.id')
-            ->join('residents', 'residents.household_id', '=', 'households.id');
-
-        $query = $this->filterPurok($query, $purokId);
-
-        return $query
+        return $this->filterPurok(
+            DB::table('households')
+                ->join('puroks', 'households.purok_id', '=', 'puroks.id')
+                ->join('residents', 'residents.household_id', '=', 'households.id'),
+            $purokId
+        )
             ->selectRaw('puroks.PurokName as name, COUNT(residents.id) as total')
             ->groupBy('puroks.PurokName')
             ->pluck('total', 'name');
     }
 
-    private function getCertificateStats($purokId, $year)
+    public function getCertificateStats($purokId, $year)
     {
-        $query = DB::table('certificate_requests')
-            ->join('residents', 'certificate_requests.resident_id', '=', 'residents.id')
-            ->join('households', 'residents.household_id', '=', 'households.id');
+        $purokId = $this->normalizePurok($purokId);
+        $year = $year ?: date('Y');
 
-        $query = $this->filterPurok($query, $purokId);
+        return collect(Cache::remember("cert_stats:$purokId:$year", 300, function () use ($purokId, $year) {
 
-        return $query
-            ->whereYear('certificate_requests.requested_at', $year)
-            ->selectRaw('certificate_requests.remark, COUNT(*) as total')
-            ->groupBy('certificate_requests.remark')
-            ->pluck('total', 'remark');
+            return $this->baseCertificatesQuery($purokId, $year)
+                ->whereBetween('certificate_requests.requested_at', [
+                    "$year-01-01",
+                    "$year-12-31 23:59:59"
+                ])
+                ->select('certificate_requests.remark', DB::raw('COUNT(*) as total'))
+                ->groupBy('certificate_requests.remark')
+                ->pluck('total', 'certificate_requests.remark')
+                ->toArray();
+
+        }));
     }
 
-    private function getMonthlyTransactions($purokId, $year)
+    public function getMonthlyTransactions($purokId, $year)
     {
-        $query = DB::table('certificate_requests')
-            ->join('residents', 'certificate_requests.resident_id', '=', 'residents.id')
-            ->join('households', 'residents.household_id', '=', 'households.id');
+        $purokId = $this->normalizePurok($purokId);
+        $year = $year ?: date('Y');
 
-        $query = $this->filterPurok($query, $purokId);
+        return collect(Cache::remember("monthly_tx:$purokId:$year", 300, function () use ($purokId, $year) {
 
-        $data = $query
-            ->selectRaw('MONTH(certificate_requests.requested_at) as month, COUNT(*) as total')
-            ->whereYear('certificate_requests.requested_at', $year)
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
-            ->pluck('total', 'month');
+            $data = $this->baseCertificatesQuery($purokId, $year)
+                ->whereBetween('certificate_requests.requested_at', [
+                    "$year-01-01",
+                    "$year-12-31 23:59:59"
+                ])
+                ->selectRaw('MONTH(certificate_requests.requested_at) as month, COUNT(*) as total')
+                ->groupByRaw('MONTH(certificate_requests.requested_at)')
+                ->pluck('total', 'month')
+                ->toArray();
 
-        $months = collect(range(1, 12))->mapWithKeys(fn($m) => [$m => $data[$m] ?? 0]);
+            return collect(range(1, 12))
+                ->mapWithKeys(fn ($m) => [$m => (int) ($data[$m] ?? 0)])
+                ->toArray();
 
-        return $months;
+        }));
     }
 
-    private function getRevenue($purokId, $year)
+    public function getRevenue($purokId, $year)
     {
-        $query = DB::table('certificate_requests')
-            ->join('certificate_types', 'certificate_requests.certificate_type_id', '=', 'certificate_types.id')
-            ->join('residents', 'certificate_requests.resident_id', '=', 'residents.id')
-            ->join('households', 'residents.household_id', '=', 'households.id')
-            ->where('certificate_requests.remark', 'Released')
-            ->whereYear('certificate_requests.requested_at', $year);
-
-        $query = $this->filterPurok($query, $purokId);
-
-        return $query->sum('certificate_types.fee');
+        return $this->filterPurok(
+            DB::table('certificate_requests')
+                ->join('certificates', 'certificate_requests.id', '=', 'certificates.request_id')
+                ->join('residents', 'certificate_requests.resident_id', '=', 'residents.id')
+                ->join('households', 'residents.household_id', '=', 'households.id')
+                ->whereYear('certificates.created_at', $year),
+            $purokId
+        )->sum('certificates.Fee');
     }
 
-    private function format($collection)
+    public function format($collection)
     {
         return [
             'labels' => $collection->keys()->values(),

@@ -151,7 +151,7 @@ class HouseholdsController extends Controller
             ->addColumn('actions', function ($row) {
                 return '
             <div class="dropdown">
-                <button class="btn btn-soft-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                <button class="btn btn-soft-primary btn-md dropdown-toggle" data-bs-toggle="dropdown">
                     Actions
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">

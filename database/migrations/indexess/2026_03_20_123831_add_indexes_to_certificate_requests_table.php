@@ -19,6 +19,15 @@ return new class extends Migration
             if (!$this->hasIndex('residents', 'residents_household_id_index')) {
                 $table->index('household_id');
             }
+            if (!$this->hasIndex('residents', 'residents_birthdate_index')) {
+                $table->index('BirthDate');
+            }
+            if (!$this->hasIndex('residents', 'residents_gender_index')) {
+                $table->index('gender');
+            }
+            if (!$this->hasIndex('residents', 'residents_is_voter_index')) {
+                $table->index('is_voter');
+            }
             if (!$this->hasIndex('residents', 'residents_created_by_index')) {
                 $table->index('created_by');
             }
@@ -36,6 +45,63 @@ return new class extends Migration
             }
             if (!$this->hasIndex('residents', 'residents_lastname_firstname_index')) {
                 $table->index(['LastName', 'FirstName']);
+            }
+        });
+
+        Schema::table('households', function (Blueprint $table) {
+            if (!$this->hasIndex('households', 'households_household_code_unique')) {
+                $table->unique('household_code');
+            }
+            if (!$this->hasIndex('households', 'households_purok_id_index')) {
+                $table->index('purok_id');
+            }
+            if (!$this->hasIndex('households', 'households_purok_head_index')) {
+                $table->index(['purok_id', 'head_id']);
+            }
+            if (!$this->hasIndex('households', 'households_head_id_index')) {
+                $table->index('head_id');
+            }
+            if (!$this->hasIndex('households', 'households_created_by_index')) {
+                $table->index('created_by');
+            }
+            if (!$this->hasIndex('households', 'households_updated_by_index')) {
+                $table->index('updated_by');
+            }
+            if (!$this->hasIndex('households', 'households_status_index')) {
+                $table->index('status');
+            }
+            if (!$this->hasIndex('households', 'households_archived_index')) {
+                $table->index('archived');
+            }
+            if (!$this->hasIndex('households', 'households_deleted_at_index')) {
+                $table->index('deleted_at');
+            }
+        });
+
+        Schema::table('certificate_requests', function (Blueprint $table) {
+            if (!$this->hasIndex('certificate_requests', 'certificate_requests_resident_id_index')) {
+                $table->index('resident_id');
+            }
+            if (!$this->hasIndex('certificate_requests', 'certificate_requests_certificate_type_id_index')) {
+                $table->index('certificate_type_id');
+            }
+            if (!$this->hasIndex('certificate_requests', 'certificate_requests_remark_index')) {
+                $table->index('remark');
+            }
+            if (!$this->hasIndex('certificate_requests', 'certificate_requests_requested_at_index')) {
+                $table->index('requested_at');
+            }
+            if (!$this->hasIndex('certificate_requests', 'certificate_requests_year_month_index')) {
+                $table->index([DB::raw('YEAR(requested_at)'), DB::raw('MONTH(requested_at)')]);
+            }
+            if (!$this->hasIndex('certificate_requests', 'certificate_requests_created_at_index')) {
+                $table->index('created_at');
+            }
+        });
+
+        Schema::table('puroks', function (Blueprint $table) {
+            if (!$this->hasIndex('puroks', 'puroks_name_index')) {
+                $table->index('PurokName');
             }
         });
 
@@ -81,48 +147,6 @@ return new class extends Migration
             }
             if (!$this->hasIndex('certificates', 'certificates_deleted_at_index')) {
                 $table->index('deleted_at');
-            }
-        });
-
-        Schema::table('households', function (Blueprint $table) {
-            if (!$this->hasIndex('households', 'households_household_code_unique')) {
-                $table->unique('household_code');
-            }
-            if (!$this->hasIndex('households', 'households_purok_id_index')) {
-                $table->index('purok_id');
-            }
-            if (!$this->hasIndex('households', 'households_head_id_index')) {
-                $table->index('head_id');
-            }
-            if (!$this->hasIndex('households', 'households_created_by_index')) {
-                $table->index('created_by');
-            }
-            if (!$this->hasIndex('households', 'households_updated_by_index')) {
-                $table->index('updated_by');
-            }
-            if (!$this->hasIndex('households', 'households_status_index')) {
-                $table->index('status');
-            }
-            if (!$this->hasIndex('households', 'households_archived_index')) {
-                $table->index('archived');
-            }
-            if (!$this->hasIndex('households', 'households_deleted_at_index')) {
-                $table->index('deleted_at');
-            }
-        });
-
-        Schema::table('certificate_requests', function (Blueprint $table) {
-            if (!$this->hasIndex('certificate_requests', 'certificate_requests_resident_id_index')) {
-                $table->index('resident_id');
-            }
-            if (!$this->hasIndex('certificate_requests', 'certificate_requests_certificate_type_id_index')) {
-                $table->index('certificate_type_id');
-            }
-            if (!$this->hasIndex('certificate_requests', 'certificate_requests_remark_index')) {
-                $table->index('remark');
-            }
-            if (!$this->hasIndex('certificate_requests', 'certificate_requests_created_at_index')) {
-                $table->index('created_at');
             }
         });
     }

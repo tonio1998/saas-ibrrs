@@ -248,48 +248,56 @@
 
 @push('scripts')
     <script>
+        document.addEventListener('DOMContentLoaded', ()=>{
 
-        document.addEventListener('DOMContentLoaded', function(){
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.content
 
-            const csrf = document.querySelector('meta[name="csrf-token"]').content
+            const request = async (url, id, btn)=>{
+                try{
+                    btn.disabled = true
+                    const original = btn.innerText
+                    btn.innerText = 'Processing...'
 
-            const request = (url, id, btn)=>{
-                btn.disabled = true
-                btn.innerText = 'Processing...'
-
-                fetch(url,{
-                    method:'POST',
-                    headers:{
-                        'X-CSRF-TOKEN': csrf,
-                        'Content-Type':'application/json'
-                    },
-                    body: JSON.stringify({id})
-                })
-                    .then(res=>{
-                        if(!res.ok) throw new Error()
-                        return res.json()
+                    const res = await fetch(url,{
+                        method:'POST',
+                        headers:{
+                            'X-CSRF-TOKEN': csrf,
+                            'Content-Type':'application/json'
+                        },
+                        body: JSON.stringify({id})
                     })
-                    .then(()=>location.reload())
-                    .catch(()=>{
-                        alert('Something went wrong')
-                        btn.disabled = false
-                    })
+
+                    if(!res.ok) throw new Error()
+
+                    location.reload()
+                }catch(e){
+                    alert('Something went wrong')
+                    btn.disabled = false
+                    btn.innerText = original
+                }
             }
 
             document.querySelectorAll('.btn-approve').forEach(btn=>{
-                btn.onclick = ()=>{
-                    if(!confirm('Approve this request?')) return
+                btn.addEventListener('click', async ()=>{
+
+                    const ok = await iosConfirm({
+                        title: 'Approve Request',
+                        message: 'Are you sure you want to approve this request?'
+                    })
+
+                    if(!ok) return
+
                     request('/certificates_request/approve', btn.dataset.id, btn)
-                }
+                })
             })
 
             const fee = document.getElementById('fee')
             const paid = document.getElementById('amount_paid')
             const change = document.getElementById('change')
 
-            const computeChange = () => {
-                const f = parseFloat(fee?.value || 0)
-                const p = parseFloat(paid?.value || 0)
+            const computeChange = ()=>{
+                const f = Number(fee?.value || 0)
+                const p = Number(paid?.value || 0)
                 const c = p - f
 
                 change.value = c >= 0
@@ -299,34 +307,43 @@
 
             paid?.addEventListener('input', computeChange)
 
-            document.getElementById('issueForm')?.addEventListener('submit', function(e){
+            const form = document.getElementById('issueForm')
+
+            form?.addEventListener('submit', async function(e){
                 e.preventDefault()
 
                 const btn = document.querySelector('.btn-issue')
+                const original = btn.innerText
 
-                btn.disabled = true
-                btn.innerText = 'Saving...'
-
-                fetch('/certificates_request/issue',{
-                    method:'POST',
-                    headers:{
-                        'X-CSRF-TOKEN': csrf
-                    },
-                    body: new FormData(this)
+                const ok = await iosConfirm({
+                    title: 'Confirm Payment',
+                    message: 'Proceed with this payment and enable printing?'
                 })
-                    .then(res=>{
-                        if(!res.ok) throw new Error()
-                        return res.json()
+
+                if(!ok) return
+
+                try{
+                    btn.disabled = true
+                    btn.innerText = 'Saving...'
+
+                    const res = await fetch('/certificates_request/issue',{
+                        method:'POST',
+                        headers:{
+                            'X-CSRF-TOKEN': csrf
+                        },
+                        body: new FormData(this)
                     })
-                    .then(()=>location.reload())
-                    .catch(()=>{
-                        alert('Failed to save payment')
-                        btn.disabled = false
-                        btn.innerText = 'Confirm Payment & Enable Printing'
-                    })
+
+                    if(!res.ok) throw new Error()
+
+                    location.reload()
+                }catch(e){
+                    alert('Failed to save payment')
+                    btn.disabled = false
+                    btn.innerText = original
+                }
             })
 
         })
-
     </script>
 @endpush

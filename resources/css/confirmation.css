@@ -1,0 +1,95 @@
+.ios-confirm {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ios-confirm.d-none {
+    display: none;
+}
+
+.ios-confirm-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    /*backdrop-filter: blur(4px);*/
+}
+
+/* box → more solid for web */
+.ios-confirm-box {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: iosPop .18s ease;
+}
+
+@keyframes iosPop {
+    from { transform: scale(.96); opacity: 0 }
+    to { transform: scale(1); opacity: 1 }
+}
+
+/* better spacing */
+.ios-confirm-content {
+    padding: 20px 18px;
+}
+
+.ios-confirm-content h6 {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.ios-confirm-content p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* action buttons (desktop friendly) */
+.ios-confirm-actions {
+    display: flex;
+    border-top: 1px solid #e5e5e5;
+}
+
+.ios-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: #fff;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+
+/* cancel */
+.ios-btn.cancel {
+    color: #555;
+    border-right: 1px solid #e5e5e5;
+}
+
+.ios-btn.cancel:hover {
+    background: #f5f5f5;
+}
+
+/* confirm */
+.ios-btn.confirm {
+    color: #0d6efd; /* bootstrap primary feel */
+}
+
+.ios-btn.confirm:hover {
+    background: #f0f6ff;
+}
+
+/* active click */
+.ios-btn:active {
+    transform: scale(.98);
+}
