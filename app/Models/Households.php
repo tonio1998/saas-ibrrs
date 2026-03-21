@@ -65,6 +65,11 @@ class Households extends Model
         return $this->hasMany(Residents::class, 'household_id');
     }
 
+    public function resident()
+    {
+        return $this->belongsTo(Residents::class, 'head_id');
+    }
+
     public function head()
     {
         return $this->belongsTo(Residents::class, 'head_id')->withTrashed();

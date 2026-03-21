@@ -39,7 +39,9 @@ Route::middleware('auth')->group(function(){
 
     Route::prefix('dashboard')->name('dashboard.')->group(function() {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/data', [DashboardController::class, 'data'])->name('data');
+        Route::get('/cards', [DashboardController::class, 'cards']);
+        Route::get('/charts', [DashboardController::class, 'charts']);
+        Route::get('/operations', [DashboardController::class, 'operations']);
     });
 
     Route::prefix('users')->name('users.')->group(function () {
@@ -73,6 +75,8 @@ Route::middleware('auth')->group(function(){
         Route::get('/create', [PuroksController::class, 'create'])->name('create');
         Route::post('/create', [PuroksController::class, 'store'])->name('store');
         Route::get('/data', [PuroksController::class, 'ajaxData'])->name('data');
+        Route::get('/show/{id}', [PuroksController::class, 'show'])->name('show');
+        Route::get('/households', [PuroksController::class, 'households'])->name('households');
     });
 
     Route::prefix('residents')->name('residents.')->group(function(){

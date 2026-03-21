@@ -16,12 +16,42 @@ class DashboardController extends Controller
         return view('pages.dashboard.index');
     }
 
-    public function data(Request $request, DashboardService $service)
+    public function cards(Request $r, DashboardService $s)
     {
-        $purokId = $request->input('purok_id', 'all');
-
         return response()->json(
-            $service->getData($purokId)
+            $s->getCards($r->purok_id, $r->year)
         );
+    }
+
+    public function charts(Request $r, DashboardService $s)
+    {
+        return response()->json([
+            'gender' => $s->format($s->getGender($r->purok_id)),
+            'purok' => $s->format($s->getPurok($r->purok_id)),
+            'age_groups' => $s->format($s->getAgeGroups($r->purok_id)),
+            'civil_status' => $s->format($s->getCivilStatus($r->purok_id)),
+        ]);
+    }
+
+    public function operations(Request $r, DashboardService $s)
+    {
+        $purok = $r->purok_id;
+        $year = $r->year ?: date('Y');
+
+        $cert = $s->getCertificateStats($purok, $year);
+        $monthly = $s->getMonthlyTransactions($purok, $year);
+
+        if ($cert->isEmpty()) {
+            $cert = collect(['No Data' => 0]);
+        }
+
+        if ($monthly->isEmpty()) {
+            $monthly = collect(range(1,12))->mapWithKeys(fn($m)=>[$m=>0]);
+        }
+
+        return response()->json([
+            'certificates' => $s->format($cert),
+            'monthly' => $s->format($monthly),
+        ]);
     }
 }

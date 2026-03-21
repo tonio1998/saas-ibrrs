@@ -15,8 +15,9 @@
             id="puroksTable"
             :columns="[
                 'Actions',
-                'Puroks No',
-                'Puroks Name',
+                'Purok No',
+                'Purok Name',
+                'Households',
                 'Created At'
             ]"
             :ajax="route('puroks.data')"
@@ -24,6 +25,7 @@
                 ['data'=>'actions','orderable'=>false,'searchable'=>false],
                 ['data'=>'PurokNo'],
                 ['data'=>'PurokName'],
+                ['data'=>'households_count','orderable'=>false,'searchable'=>false],
                 ['data'=>'created_at']
             ]"
         />

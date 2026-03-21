@@ -44,9 +44,19 @@
         <div id="dashboardContent">
 
             <div class="row g-3">
-
                 <div class="col-6 col-md-4 col-lg-2">
-                    <div class="stat-card compact">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary-soft"><i class="bi bi-cash"></i></div>
+                        <div>
+                            <div class="stat-value" id="revenue">
+                                <span class="spinner-border spinner-border-sm"></span>
+                            </div>
+                            <div class="stat-label">Revenue</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="stat-card">
                         <div class="stat-icon bg-primary-soft"><i class="bi bi-people"></i></div>
                         <div>
                             <div class="stat-value" id="residentsCount">
@@ -58,7 +68,7 @@
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-2">
-                    <div class="stat-card compact">
+                    <div class="stat-card">
                         <div class="stat-icon bg-success-soft"><i class="bi bi-house"></i></div>
                         <div>
                             <div class="stat-value" id="householdsCount">
@@ -70,7 +80,7 @@
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-2">
-                    <div class="stat-card compact">
+                    <div class="stat-card">
                         <div class="stat-icon bg-warning-soft"><i class="bi bi-check2-square"></i></div>
                         <div>
                             <div class="stat-value" id="votersCount">
@@ -82,7 +92,7 @@
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-2">
-                    <div class="stat-card compact">
+                    <div class="stat-card">
                         <div class="stat-icon bg-danger-soft"><i class="bi bi-person-badge"></i></div>
                         <div>
                             <div class="stat-value" id="seniorCount">
@@ -94,7 +104,7 @@
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-2">
-                    <div class="stat-card compact">
+                    <div class="stat-card">
                         <div class="stat-icon bg-info-soft"><i class="bi bi-graph-up"></i></div>
                         <div>
                             <div class="stat-value" id="avgHousehold">
@@ -111,6 +121,9 @@
                 <div class="col-lg-6">
                     <div class="chart-card">
                         <div class="chart-header">Gender Distribution</div>
+                        <div class="chart-loader">
+                            <div class="spinner-border spinner-border-sm"></div>
+                        </div>
                         <canvas id="genderChart"></canvas>
                     </div>
                 </div>
@@ -118,6 +131,9 @@
                 <div class="col-lg-6">
                     <div class="chart-card">
                         <div class="chart-header">Population by Purok</div>
+                        <div class="chart-loader">
+                            <div class="spinner-border spinner-border-sm"></div>
+                        </div>
                         <canvas id="purokChart"></canvas>
                     </div>
                 </div>
@@ -127,6 +143,9 @@
                 <div class="col-lg-6">
                     <div class="chart-card">
                         <div class="chart-header">Age Distribution</div>
+                        <div class="chart-loader">
+                            <div class="spinner-border spinner-border-sm"></div>
+                        </div>
                         <canvas id="ageChart"></canvas>
                     </div>
                 </div>
@@ -134,6 +153,9 @@
                 <div class="col-lg-6">
                     <div class="chart-card">
                         <div class="chart-header">Civil Status</div>
+                        <div class="chart-loader">
+                            <div class="spinner-border spinner-border-sm"></div>
+                        </div>
                         <canvas id="civilChart"></canvas>
                     </div>
                 </div>
@@ -143,6 +165,9 @@
                 <div class="col-lg-6">
                     <div class="chart-card">
                         <div class="chart-header">Certificate Status</div>
+                        <div class="chart-loader">
+                            <div class="spinner-border spinner-border-sm"></div>
+                        </div>
                         <canvas id="certChart"></canvas>
                     </div>
                 </div>
@@ -150,6 +175,9 @@
                 <div class="col-lg-6">
                     <div class="chart-card">
                         <div class="chart-header">Monthly Transactions</div>
+                        <div class="chart-loader">
+                            <div class="spinner-border spinner-border-sm"></div>
+                        </div>
                         <canvas id="monthlyChart"></canvas>
                     </div>
                 </div>

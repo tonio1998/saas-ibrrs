@@ -23,7 +23,8 @@ class CertificateRequestController extends Controller
 
     public function index()
     {
-        return view('pages.certificates_request.index');
+        $certificateTypes = CertificatesType::get();
+        return view('pages.certificates_request.index', compact('certificateTypes'));
     }
 
     public function create()
@@ -345,8 +346,25 @@ class CertificateRequestController extends Controller
                 'remark',
                 'requested_at',
                 'created_at'
-            ])
-            ->latest('id');
+            ]);
+
+        // FILTERS
+        if ($request->filled('status')) {
+            $query->where('remark', $request->status);
+        }
+
+        if ($request->filled('type')) {
+            $query->where('certificate_type_id', $request->type);
+        }
+
+        if ($request->filled('date_from') && $request->filled('date_to')) {
+            $query->whereBetween('requested_at', [
+                $request->date_from,
+                $request->date_to
+            ]);
+        }
+
+        $query->latest('id');
 
         return $datatables->eloquent($query)
             ->addColumn('actions', function ($row) {
@@ -383,8 +401,8 @@ class CertificateRequestController extends Controller
             </div>';
             })
             ->addColumn('control_no', fn($row) => $row->ControlNo)
-            ->addColumn('resident', fn($row) => $row->resident->full_name ?? '')
-            ->addColumn('type', fn($row) => $row->certificateType->name ?? '-')
+            ->addColumn('resident', fn($row) => $row->resident?->full_name ?? '-')
+            ->addColumn('type', fn($row) => $row->certificateType?->name ?? '-')
             ->addColumn('status_badge', function ($row) {
 
                 $color = match ($row->remark) {
@@ -395,11 +413,9 @@ class CertificateRequestController extends Controller
 
                 return '<span class="badge bg-' . $color . '">' . $row->remark . '</span>';
             })
-            ->editColumn('requested_at', fn($row) => optional($row->requested_at)->format('M d, Y h:i A'))
-            ->editColumn('created_at', fn($row) => optional($row->created_at)->format('M d, Y h:i A'))
-            ->editColumn('requested_at', fn($row)=>$row->requested_at?->format('M d, Y h:i A'))
-            ->editColumn('created_at', fn($row)=>$row->created_at?->format('M d, Y h:i A'))
-            ->rawColumns(['actions','status_badge'])
+            ->editColumn('requested_at', fn($row) => $row->requested_at?->format('M d, Y h:i A'))
+            ->editColumn('created_at', fn($row) => $row->created_at?->format('M d, Y h:i A'))
+            ->rawColumns(['actions', 'status_badge'])
             ->make(true);
     }
 

@@ -135,7 +135,7 @@ class ResidentsController extends Controller
 
     public function ajaxData(Request $request, DataTables $datatables)
     {
-        $query = Residents::with(['createdBy','household']);
+        $query = Residents::with(['createdBy','household.resident']);
         if ($request->filled('name')) {
             $query->where(function ($q) use ($request) {
                 $q->where('FirstName', 'like', "%{$request->name}%")
@@ -202,7 +202,7 @@ class ResidentsController extends Controller
 
                         return '
                     <div class="dropdown">
-                        <button class="btn btn-soft-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                        <button class="btn btn-soft-primary btn-md dropdown-toggle" data-bs-toggle="dropdown">
                             Actions
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -220,7 +220,7 @@ class ResidentsController extends Controller
                 if(!$resident->household) return '-';
 
                 return "
-                <div>{$resident?->household?->household_code}</div>
+                <div>{$resident->household->resident?->full_name}</div>
             ";
             })
             ->addColumn('gender', function ($resident) {

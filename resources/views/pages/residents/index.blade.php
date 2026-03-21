@@ -4,7 +4,7 @@
 @section('content')
     <x-page-header title="Resident Management" subtitle="Manage residents">
         <x-slot:action>
-            <button class="btn btn-outline-secondary btn-md" data-bs-toggle="modal" data-bs-target="#residentFilter">
+            <button class="btn btn-light btn-md" data-bs-toggle="modal" data-bs-target="#residentFilter">
                 <i class="bi bi-funnel"></i> Filters
             </button>
             <a href="{{ route('residents.create') }}" class="btn btn-primary btn-md">
@@ -49,12 +49,12 @@
     <x-modal.modal id="residentFilter" title="Filter Residents" size="md">
 
         <div class="mb-3">
-            <label class="small text-muted">Search Name</label>
+            <label class="small">Search Name</label>
             <input type="text" data-filter="name" class="form-control form-control-sm">
         </div>
 
         <div class="mb-3">
-            <label class="small text-muted">Gender</label>
+            <label class="small">Gender</label>
             <select data-filter="gender" class="form-select form-select-sm">
                 <option value="">All</option>
                 <option value="Male">Male</option>
@@ -63,7 +63,7 @@
         </div>
 
         <div class="mb-3">
-            <label class="small text-muted">Civil Status</label>
+            <label class="small">Civil Status</label>
             <select data-filter="civil_status" class="form-select form-select-sm">
                 <option value="">All</option>
                 <option value="Single">Single</option>
@@ -81,7 +81,7 @@
         </div>
 
         <div class="mb-3">
-            <label class="small text-muted">Voter</label>
+            <label class="small">Voter</label>
             <select data-filter="voter" class="form-select form-select-sm">
                 <option value="">All</option>
                 <option value="1">Yes</option>

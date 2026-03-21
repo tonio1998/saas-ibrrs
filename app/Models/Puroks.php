@@ -29,7 +29,7 @@ class Puroks extends Model
 
     public function households()
     {
-        return $this->hasMany(Households::class, 'purok', 'PurokName');
+        return $this->hasMany(Households::class, 'purok_id', 'PurokNo');
     }
 
 }
